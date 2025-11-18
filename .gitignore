@@ -1,0 +1,12 @@
+# IntelliJ project files
+.idea/
+*.iml
+
+# Java backend
+/backend/target/
+*.class
+*.jar
+
+# Angular frontend
+/frontend/node_modules/
+/frontend/dist/
