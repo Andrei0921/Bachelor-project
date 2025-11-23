@@ -1,0 +1,42 @@
+<div class="login-page">
+  <div class="login-box">
+    <h1>Money Mind</h1>
+    <h2>Welcome Back!</h2>
+    <p class="subtitle">Please login to your account</p>
+
+    <form (ngSubmit)="onSubmit()">
+      <input
+        [(ngModel)]="email"
+        name="email"
+        placeholder="Email"
+        required
+        type="email"
+        pInputText
+        class="w-full"/>
+
+      <p-password
+        [(ngModel)]="password"
+        name="password"
+        placeholder="Password"
+        [toggleMask]="true"
+        [feedback]="false"
+        styleClass="w-full"
+        inputStyleClass="w-full"
+        required>
+      </p-password>
+
+      <p-button
+        class="login-btn"
+        type="submit"
+        label="Login"
+        [loading]="isLoading"
+        styleClass="w-full">
+      </p-button>
+
+    </form>
+
+    <p class="register-text">Don't have an account? <a [routerLink]="['/register']">Register</a></p>
+
+    <p-message *ngIf="errorMessage" [text]="errorMessage" severity="error" styleClass="w-full"></p-message>
+  </div>
+</div>

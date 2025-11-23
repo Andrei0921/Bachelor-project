@@ -1,3 +1,5 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.5'
@@ -27,6 +29,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
     // Validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
@@ -60,8 +63,8 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.1'
 
     // Flyway for DB migrations
-    implementation 'org.flywaydb:flyway-core'
-    implementation 'org.flywaydb:flyway-database-postgresql'
+//    implementation 'org.flywaydb:flyway-core'
+//    implementation 'org.flywaydb:flyway-database-postgresql'
 
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
@@ -69,4 +72,57 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+spotless {
+    java {
+        palantirJavaFormat()
+    }
+}
+
+openApi {
+    apiDocsUrl.set("http://localhost:8080/v3/api-docs")
+    outputDir.set(file("$buildDir/generated"))
+    outputFileName.set("licenta.yaml")
+    waitTimeInSeconds.set(20)
+
+    customBootRun {
+        args.set(["--spring.profiles.active=openapi"])
+    }
+}
+
+tasks.register('generateAngularClient', GenerateTask) {
+    dependsOn tasks.generateOpenApiDocs
+    generatorName.set("typescript-angular")
+    inputSpec.set(file("$buildDir/generated/licenta.yaml").toURI().toString())
+
+    outputDir.set("$projectDir/../frontend/src/app/api")
+    apiPackage.set("api")
+    modelPackage.set("model")
+    additionalProperties.set([
+            ngVersion: "17.0.0",
+            npmName  : "@myorg/api-client"
+    ])
+}
+
+tasks.build {
+    dependsOn tasks.generateAngularClient
+}
+
+tasks.register("openSwagger") {
+    dependsOn tasks.bootRun
+    doLast {
+        def os = org.gradle.internal.os.OperatingSystem.current()
+        if (os.isWindows()) {
+            exec { commandLine "cmd", "/c", "start", "http://localhost:8080/swagger-ui/index.html" }
+        } else if (os.isMacOsX()) {
+            exec { commandLine "open", "http://localhost:8080/swagger-ui/index.html" }
+        } else {
+            exec { commandLine "xdg-open", "http://localhost:8080/swagger-ui/index.html" }
+        }
+    }
+}
+
+tasks.bootRun {
+    finalizedBy("openSwagger")
 }
