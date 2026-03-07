@@ -1,0 +1,116 @@
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h2>Admin - Lecții</h2>
+      <p class="muted">Creează lecții.</p>
+    </div>
+  </div>
+
+  <p-card styleClass="card">
+    <ng-template pTemplate="title">
+      {{ editingId ? 'Editează lecția' : 'Creează lecție' }}
+    </ng-template>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="form">
+      <div class="grid">
+        <div class="field">
+          <label for="titlu">Titlu</label>
+          <input id="titlu" pInputText formControlName="titlu" placeholder="Ex: Periaj corect" />
+          <small class="err" *ngIf="form.get('titlu')?.touched && form.get('titlu')?.invalid">
+            Titlul este obligatoriu (minim 3 caractere).
+          </small>
+        </div>
+
+        <div class="field span-2">
+          <label for="continut">Conținut</label>
+          <textarea
+            id="continut"
+            pInputTextarea
+            formControlName="continut"
+            rows="6"
+            autoResize="true"
+            placeholder="Scrie conținutul lecției…"
+          ></textarea>
+          <small class="err" *ngIf="form.get('continut')?.touched && form.get('continut')?.invalid">
+            Conținutul este obligatoriu (minim 10 caractere).
+          </small>
+        </div>
+
+        <div class="field span-2">
+          <label>Imagine (opțional)</label>
+
+          <p-fileUpload
+            mode="basic"
+            chooseLabel="Alege imagine"
+            accept="image/*"
+            [multiple]="false"
+            [maxFileSize]="5000000"
+            [customUpload]="true"
+            (onSelect)="onImageSelected($event)"
+          ></p-fileUpload>
+
+          <div class="thumbs" *ngIf="preview">
+            <img [src]="preview" class="thumb" />
+            <p-button type="button" class="p-button-text p-button-danger" icon="pi pi-times" (click)="clearImage()"></p-button>
+          </div>
+        </div>
+      </div>
+
+      <p-toolbar styleClass="toolbar">
+        <ng-template pTemplate="left">
+          <p-button type="button" label="Nou" icon="pi pi-plus" class="p-button-text" (click)="startCreate()"></p-button>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <p-button
+            type="submit"
+            [label]="editingId ? 'Actualizează' : 'Creează'"
+            [icon]="editingId ? 'pi pi-save' : 'pi pi-check'"
+            [disabled]="form.invalid || isLoading"
+          ></p-button>
+        </ng-template>
+      </p-toolbar>
+    </form>
+  </p-card>
+
+  <p-card *ngIf="isLoading" styleClass="card">
+    <div class="loading">Se încarcă…</div>
+  </p-card>
+
+  <p-card styleClass="card">
+    <ng-template pTemplate="title">Lecții existente</ng-template>
+
+    <p-table [value]="lessons" [paginator]="true" [rows]="8" responsiveLayout="scroll">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 220px;">Titlu</th>
+          <th>Conținut</th>
+          <th style="width: 160px;">Acțiuni</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-l>
+        <tr>
+          <td>
+            <div class="title-cell">{{ l.titlu }}</div>
+          </td>
+          <td>
+            <div class="content-preview">{{ l.contentText }}</div>
+          </td>
+          <td>
+            <div class="row-actions">
+              <p-button type="button" class="p-button-text" icon="pi pi-pencil" (click)="startEdit(l)"></p-button>
+              <p-button type="button" class="p-button-text p-button-danger" icon="pi pi-trash" (click)="remove(l.id!)"></p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="3" class="muted">Nu există lecții încă.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>
+

@@ -16,7 +16,8 @@ public class UserMapper {
      * @return the corresponding UserDto
      */
     public static UserDTO toDto(User user) {
-        return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword(), user.getCreatedAt());
+        return new UserDTO(
+                user.getId(), user.getName(), user.getEmail(), user.getPassword(), user.getRole(), user.getCreatedAt());
     }
 
     /**
@@ -26,7 +27,7 @@ public class UserMapper {
      * @return the corresponding User entity
      */
     public static User fromDto(UserDTO dto) {
-        return new User(dto.getId(), dto.getName(), dto.getEmail(), dto.getPassword());
+        return new User(dto.getId(), dto.getName(), dto.getEmail(), dto.getPassword(), dto.getRole());
     }
 
     public static Collection<UserDTO> toDtoList(Collection<User> users) {

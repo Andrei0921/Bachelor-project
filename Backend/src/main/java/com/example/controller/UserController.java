@@ -4,7 +4,6 @@ import com.example.controller.problem.UserApiErrorResponses;
 import com.example.domain.User;
 import com.example.dto.UserDTO;
 import com.example.mapper.UserMapper;
-import com.example.service.ActivityService;
 import com.example.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,12 +26,10 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final ActivityService activityService;
 
-    public UserController(UserService userService, PasswordEncoder passwordEncoder, ActivityService activityService) {
+    public UserController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-        this.activityService = activityService;
     }
 
     @Operation(summary = "Get all users", description = "Returns a list of all users")
@@ -147,13 +144,6 @@ public class UserController {
         existingUser.setEmail(userDto.getEmail());
 
         User updatedUser = userService.updateUser(existingUser);
-
-        // Log activity
-        if (passwordChanged) {
-            activityService.logActivity(id, "PASSWORD_CHANGE", "Changed password", "pi pi-key");
-        } else {
-            activityService.logActivity(id, "PROFILE_UPDATE", "Updated profile info", "pi pi-pencil");
-        }
 
         logger.info("User updated: {}", updatedUser);
         return ResponseEntity.ok(UserMapper.toDto(updatedUser));

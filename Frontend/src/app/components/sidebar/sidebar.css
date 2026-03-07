@@ -1,0 +1,125 @@
+:host {
+  display: block;
+}
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 280px;
+  background: #ffffff;
+  border-right: 1px solid rgba(17, 24, 39, 0.08);
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 50;
+}
+
+.sidebar.collapsed {
+  width: 72px;
+  padding: 14px 10px;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.brand.hide {
+  display: none;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #a855f7, #6366f1);
+  color: #fff;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-text .title {
+  font-weight: 700;
+  color: #111827;
+  font-size: 14px;
+}
+
+.brand-text .subtitle {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+/* PrimeNG button tweak */
+.toggle.p-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: #111827;
+  text-decoration: none;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.sidebar.collapsed .menu-item {
+  justify-content: center;
+  padding: 10px;
+}
+
+.menu-item .icon {
+  font-size: 18px;
+  color: #6b7280;
+}
+
+.menu-item:hover {
+  background: rgba(99, 102, 241, 0.08);
+  transform: translateX(2px);
+}
+
+.menu-item.active {
+  background: rgba(168, 85, 247, 0.12);
+}
+
+.menu-item.active .icon {
+  color: #7c3aed;
+}
+
+.label {
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

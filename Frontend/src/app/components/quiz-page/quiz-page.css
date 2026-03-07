@@ -1,0 +1,153 @@
+.quiz-container {
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.title {
+  margin: 0 0 16px;
+}
+
+.subtitle {
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.loading,
+.empty {
+  padding: 16px;
+  opacity: 0.8;
+}
+
+.quiz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.quiz-card {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quiz-card__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.quiz-card__title {
+  margin: 0;
+  font-size: 18px;
+}
+
+.quiz-card__category {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.quiz-card__desc {
+  margin: 0;
+  opacity: 0.85;
+}
+
+.quiz-card__meta {
+  margin-top: -4px;
+  opacity: 0.85;
+}
+
+.runner-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.progress {
+  opacity: 0.8;
+  margin: 8px 0 12px;
+}
+
+.question-card {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.question {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.answer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.result {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 8px 16px;
+  margin: 12px 0 16px;
+}
+
+.result-details {
+  margin-top: 12px;
+}
+
+.result-row {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+
+.pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  margin-bottom: 6px;
+}
+
+.pill--ok {
+  border-color: rgba(0, 128, 0, 0.35);
+}
+
+.pill--bad {
+  border-color: rgba(200, 0, 0, 0.35);
+}
+
+.answers-mini {
+  opacity: 0.9;
+}
+

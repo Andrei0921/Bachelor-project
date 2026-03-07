@@ -1,0 +1,38 @@
+<aside class="sidebar" [class.collapsed]="collapsed">
+  <div class="top">
+    <div class="brand" [class.hide]="collapsed">
+      <div class="brand-mark">
+        <i class="pi pi-sparkles"></i>
+      </div>
+      <div class="brand-text">
+        <div class="title">Admin</div>
+        <div class="subtitle">Panel</div>
+      </div>
+    </div>
+
+    <p-button
+      type="button"
+      class="toggle"
+      [icon]="collapsed ? 'pi pi-angle-right' : 'pi pi-angle-left'"
+      [pTooltip]="collapsed ? 'Extinde meniul' : 'Restrânge meniul'"
+      tooltipPosition="right"
+      (click)="toggleCollapsed()"
+    ></p-button>
+  </div>
+
+  <nav class="menu">
+    <a
+      class="menu-item"
+      *ngFor="let item of menuItems"
+      [class.active]="item.active"
+      [routerLink]="item.route"
+      routerLinkActive="active"
+      (click)="onSelect(item)"
+      [pTooltip]="collapsed ? item.label : ''"
+      tooltipPosition="right"
+    >
+      <i class="icon" [class]="item.icon"></i>
+      <span class="label" *ngIf="!collapsed">{{ item.label }}</span>
+    </a>
+  </nav>
+</aside>

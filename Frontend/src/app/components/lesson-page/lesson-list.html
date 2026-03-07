@@ -1,0 +1,13 @@
+<div *ngIf="lesson">
+  <h2>{{ lesson.titlu }}</h2>
+  <p>{{ lesson.descriere }}</p>
+  <div [innerHTML]="lesson.contentText"></div>
+  <img *ngIf="lesson.imagineUrls" [src]="lesson.imagineUrls" alt="lesson image" />
+</div>
+
+<p-paginator
+  [rows]="1"
+  [totalRecords]="lessons.length"
+  [first]="currentLessonIndex"
+  (onPageChange)="onPageChange($event)">
+</p-paginator>

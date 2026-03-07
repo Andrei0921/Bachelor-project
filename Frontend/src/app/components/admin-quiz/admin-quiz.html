@@ -1,0 +1,126 @@
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h2>Admin - Quiz-uri</h2>
+      <p class="muted">Creaza quiz-uri.</p>
+    </div>
+  </div>
+
+  <p-card styleClass="card">
+    <ng-template pTemplate="title">
+      {{ editingId ? 'Editează quiz' : 'Creează quiz' }}
+    </ng-template>
+
+    <form [formGroup]="form" (ngSubmit)="save()" class="form">
+      <div class="grid">
+        <div class="p-field">
+          <label for="titlu">Titlu</label>
+          <input id="titlu" pInputText formControlName="titlu" placeholder="Ex: Igiena dentară" />
+        </div>
+
+        <div class="p-field">
+          <label for="desc">Descriere</label>
+          <input id="desc" pInputText formControlName="descriere" placeholder="opțional" />
+        </div>
+      </div>
+
+      <p-toolbar styleClass="toolbar">
+        <ng-template pTemplate="left">
+          <p-button type="button" label="Nou" icon="pi pi-plus" class="p-button-text" (onClick)="newQuiz()"></p-button>
+          <p-button type="button" label="Întrebare" icon="pi pi-list-add" class="p-button-text" (onClick)="addQuestion()"></p-button>
+        </ng-template>
+        <ng-template pTemplate="right">
+          <p-button
+            type="submit"
+            [label]="editingId ? 'Actualizează' : 'Creează'"
+            [icon]="editingId ? 'pi pi-save' : 'pi pi-check'"
+            [disabled]="form.invalid || isLoading"
+          ></p-button>
+        </ng-template>
+      </p-toolbar>
+
+      <p-divider></p-divider>
+
+      <div formArrayName="questions" class="q-wrap">
+        <p-accordion *ngIf="questions.controls.length; else noQuestions" [multiple]="true">
+          <p-accordion-panel
+            *ngFor="let q of questions.controls; let qi = index"
+            [formGroupName]="qi"
+          ><p-accordion-header>Întrebarea {{qi + 1}}</p-accordion-header>
+            <div class="q-inner">
+              <div class="q-head">
+                <strong>Text întrebare</strong>
+                <p-button type="button" class="p-button-text p-button-danger" icon="pi pi-trash" label="Șterge" (onClick)="removeQuestion(qi)"></p-button>
+              </div>
+
+              <input pInputText formControlName="intrebare" placeholder="Scrie întrebarea…" />
+
+              <div formArrayName="answers" class="answers">
+                <div
+                  class="answer"
+                  *ngFor="let a of answersOf(qi).controls; let ai = index"
+                  [formGroupName]="ai"
+                >
+                  <input pInputText formControlName="text" placeholder="Răspuns" />
+
+                  <div class="correct">
+                    <p-checkbox
+                      formControlName="isCorrect"
+                      [binary]="true"
+                    ></p-checkbox>
+                    <span>Corect</span>
+                  </div>
+
+                  <p-button type="button" class="p-button-text p-button-danger" icon="pi pi-times" (click)="removeAnswer(qi, ai)"></p-button>
+                </div>
+
+                <p-button type="button" class="p-button-text" icon="pi pi-plus" label="Adaugă răspuns" (click)="addAnswer(qi)"></p-button>
+              </div>
+            </div>
+          </p-accordion-panel>
+        </p-accordion>
+
+        <ng-template #noQuestions>
+          <div class="muted">Adaugă o întrebare ca să începi.</div>
+        </ng-template>
+      </div>
+    </form>
+  </p-card>
+
+  <p-card *ngIf="isLoading" styleClass="card">
+    <div class="loading">Se încarcă…</div>
+  </p-card>
+
+  <p-card styleClass="card">
+    <ng-template pTemplate="title">Quiz-uri existente</ng-template>
+
+    <p-table [value]="quizzes" [paginator]="true" [rows]="8" responsiveLayout="scroll">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 260px;">Titlu</th>
+          <th>Descriere</th>
+          <th style="width: 160px;">Acțiuni</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-q>
+        <tr>
+          <td><div class="title-cell">{{ q.titlu }}</div></td>
+          <td><div class="content-preview">{{ q.descriere }}</div></td>
+          <td>
+            <div class="row-actions">
+              <p-button type="button" class="p-button-text" icon="pi pi-pencil" (click)="edit(q.id!)"></p-button>
+              <p-button type="button" class="p-button-text p-button-danger" icon="pi pi-trash" (click)="remove(q.id!)"></p-button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="3" class="muted">Nu există quiz-uri încă.</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>

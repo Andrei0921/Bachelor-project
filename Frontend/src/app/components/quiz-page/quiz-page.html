@@ -1,0 +1,185 @@
+<div class="quiz-container">
+  <ng-container *ngIf="!activeQuiz && !isLoading; else loadingTpl">
+    <div class="page-head">
+      <div>
+        <p class="eyebrow">QUIZ CENTER</p>
+        <h2 class="title">Alege un quiz</h2>
+        <p class="subtitle">Apasă pe un quiz ca să vezi detaliile, scorul maxim și butonul de start.</p>
+      </div>
+    </div>
+
+    <div *ngIf="quizzes.length === 0" class="empty">Nu există quiz-uri disponibile momentan.</div>
+
+    <div class="quiz-list">
+      <div class="quiz-card" *ngFor="let q of quizzes" [class.quiz-card--open]="isExpanded(q.id)">
+        <button class="quiz-summary" type="button" (click)="toggleQuizDetails(q.id)">
+          <div class="quiz-summary__content">
+            <div class="quiz-card__header">
+              <h3 class="quiz-card__title">{{ q.titlu }}</h3>
+              <span class="quiz-card__category" *ngIf="q.categorie">{{ q.categorie }}</span>
+            </div>
+            <p class="quiz-card__desc">{{ q.descriere || 'Fără descriere momentan.' }}</p>
+          </div>
+          <span class="quiz-summary__icon">{{ isExpanded(q.id) ? '−' : '+' }}</span>
+        </button>
+
+        <div class="quiz-details" *ngIf="isExpanded(q.id) && q.id as qid">
+          <div class="quiz-stats">
+            <div class="stat-box">
+              <span class="stat-label">Întrebări: {{ totalByQuizId[qid] ?? 0 }}</span>
+            </div>
+
+            <div class="stat-box" *ngIf="bestResultByQuizId[qid] as r; else noScoreTpl">
+              <span class="stat-label">Scor maxim</span>
+              <strong>{{ r.scor }} / {{ totalByQuizId[qid]}}</strong>
+            </div>
+
+            <ng-template #noScoreTpl>
+              <div class="stat-box stat-box--muted">
+                <span class="stat-label">Scor maxim</span>
+                <strong>{{ userId ? 'Încă nu există' : 'Disponibil după login' }}</strong>
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="details-actions">
+            <button class="btn btn-primary" type="button" (click)="startQuiz(q)">Start quiz</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="activeQuiz">
+    <div class="runner-header">
+      <div>
+        <p class="eyebrow">QUIZ IN PROGRES</p>
+        <h2 class="title">{{ activeQuiz.titlu }}</h2>
+        <div class="subtitle" *ngIf="activeQuiz.descriere">{{ activeQuiz.descriere }}</div>
+      </div>
+
+      <button class="btn btn-secondary" type="button" (click)="reset()">Înapoi la quizuri</button>
+    </div>
+
+    <div *ngIf="!result" class="runner">
+      <div class="runner-layout">
+        <aside class="question-nav" *ngIf="questions.length">
+          <button
+            type="button"
+            class="question-nav__item"
+            *ngFor="let q of questions; let i = index"
+            [class.question-nav__item--active]="i === currentIndex"
+            [class.question-nav__item--done]="q.id && selectedByQuestionId[q.id] !== undefined"
+            (click)="goToQuestion(i)"
+          >
+            {{ i + 1 }}
+          </button>
+        </aside>
+
+        <section class="question-card" *ngIf="currentQuestion as question; else noQuestionsTpl">
+          <div class="progress">Întrebarea {{ currentIndex + 1 }} / {{ questions.length }}</div>
+          <div class="question">{{ question.intrebare }}</div>
+
+          <div class="answers" *ngIf="question.answers?.length; else noAnswersTpl">
+            <label class="answer" *ngFor="let a of question.answers">
+              <input
+                type="radio"
+                name="q{{ question.id }}"
+                [value]="a.id"
+                [(ngModel)]="selectedByQuestionId[question.id!]"
+              />
+              <span>{{ a.text }}</span>
+            </label>
+          </div>
+
+          <ng-template #noAnswersTpl>
+            <div class="empty">Această întrebare nu are răspunsuri configurate.</div>
+          </ng-template>
+
+          <div class="actions">
+            <button
+              class="btn btn-secondary"
+              type="button"
+              (click)="prev()"
+              [disabled]="currentIndex === 0"
+            >
+              Înapoi
+            </button>
+
+            <button
+              class="btn btn-primary"
+              type="button"
+              (click)="next()"
+              *ngIf="currentIndex < questions.length - 1"
+              [disabled]="!hasSelectedCurrentAnswer"
+            >
+              Următoarea întrebare
+            </button>
+
+            <button
+              class="btn btn-primary"
+              type="button"
+              (click)="finish()"
+              *ngIf="currentIndex === questions.length - 1"
+              [disabled]="!hasSelectedCurrentAnswer"
+            >
+              Vezi scorul final
+            </button>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <ng-template #noQuestionsTpl>
+      <div class="result">
+        <h3>Nu există întrebări în acest quiz.</h3>
+        <div class="actions">
+          <button class="btn btn-primary" type="button" (click)="reset()">Înapoi la lista de quiz-uri</button>
+        </div>
+      </div>
+    </ng-template>
+
+    <div *ngIf="result" class="result">
+      <p class="eyebrow">REZULTAT FINAL</p>
+
+      <div class="result-grid">
+        <div class="result-stat">
+          <span>Scor</span>
+          <strong>{{ result.scor }} / {{ questions.length }}</strong>
+        </div>
+        <div class="result-stat">
+          <span>Răspunsuri greșite</span>
+          <strong>{{ result.raspunsuriGresite }}</strong>
+        </div>
+      </div>
+
+      <div class="result-details" *ngIf="questions.length">
+        <h4>Detalii pe întrebări</h4>
+        <div class="result-row" *ngFor="let q of questions; let i = index">
+          <div class="result-row__q">
+            <b>{{ i + 1 }}.</b> {{ q.intrebare }}
+          </div>
+          <div class="result-row__a">
+            <span class="pill" [class.pill--ok]="isCorrect(q) === true" [class.pill--bad]="isCorrect(q) === false">
+              {{ isCorrect(q) === true ? 'Corect' : (isCorrect(q) === false ? 'Greșit' : 'Neselectat') }}
+            </span>
+            <div class="answers-mini">
+              <div><small><b>Ai ales:</b> {{ selectedText(q) }}</small></div>
+              <div><small><b>Răspuns corect:</b> {{ correctText(q) }}</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="button" (click)="reset()">Înapoi la pagina de quizuri</button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #loadingTpl>
+    <div class="loading">Se încarcă...</div>
+  </ng-template>
+</div>
+
+

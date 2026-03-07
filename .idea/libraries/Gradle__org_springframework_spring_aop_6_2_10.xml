@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-aop/6.2.10/2b194c29deaadb71a8a8e5b8b41d9521c29a0d66/spring-aop-6.2.10.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework/spring-aop/6.2.10/6c7a285ea67cda32526518b80d14582de916f8bf/spring-aop-6.2.10-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: app-postgres
+    environment:
+      POSTGRES_DB: Licenta
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: andrei921
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  ai:
+    build: ./AI
+    container_name: app-ai
+    ports:
+      - "5001:5001"
+    environment:
+      - PORT=5001
+
+  backend:
+    build: ./Backend
+    container_name: app-backend
+    depends_on:
+      - postgres
+      - ai
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/Licenta
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: andrei921
+      JWT_SECRET: bc6097db3ef6a05e98e6c7a06b756e23f546244076194eef11f7e94b29590d2a
+      JWT_EXPIRATION: 86400
+      AI_BASE_URL: http://ai:5001
+    volumes:
+      - uploads_data:/app/uploads
+
+  frontend:
+    build: ./Frontend
+    container_name: app-frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"

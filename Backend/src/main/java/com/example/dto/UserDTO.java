@@ -1,7 +1,7 @@
 package com.example.dto;
 
+import com.example.domain.UserRole;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class UserDTO {
@@ -9,25 +9,30 @@ public class UserDTO {
     private String name;
     private String email;
     private String password;
+    private UserRole role;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String currentPassword;
 
     private LocalDateTime createdAt;
-    private BigDecimal balance;
 
     public UserDTO() {}
 
-    public UserDTO(Long id, String name, String email, String password, LocalDateTime createdAt) {
+    public UserDTO(Long id, String name, String email, String password, UserRole role, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
         this.createdAt = createdAt;
     }
 
     public Long getId() {
         return id;
+    }
+
+    public UserRole getRole() {
+        return role;
     }
 
     public String getName() {

@@ -23,11 +23,16 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    public User(Long id, String name, String email, String password) {
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role")
+    private UserRole role;
+
+    public User(Long id, String name, String email, String password, UserRole role) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
         this.createdAt = LocalDateTime.now();
     }
 
@@ -50,6 +55,10 @@ public class User {
         return password;
     }
 
+    public UserRole getRole() {
+        return role;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -68,6 +77,10 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {

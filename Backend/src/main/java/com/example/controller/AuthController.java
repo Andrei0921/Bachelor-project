@@ -1,11 +1,12 @@
 package com.example.controller;
 
+import com.example.controller.problem.UserApiErrorResponses;
 import com.example.domain.User;
+import com.example.domain.UserRole;
 import com.example.domain.auth.AuthRequest;
 import com.example.domain.auth.AuthResponse;
 import com.example.domain.auth.RegisterRequest;
 import com.example.security.JwtUtils;
-import com.example.service.ActivityService;
 import com.example.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,28 +26,30 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+@RequestMapping("/api/auth")
+@UserApiErrorResponses
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final UserService userService;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
-    private final ActivityService activityService;
 
     public AuthController(
             AuthenticationManager authenticationManager,
             UserDetailsService userDetailsService,
             UserService userService,
             JwtUtils jwtUtils,
-            PasswordEncoder passwordEncoder,
-            ActivityService activityService) {
+            PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.userService = userService;
         this.jwtUtils = jwtUtils;
         this.passwordEncoder = passwordEncoder;
-        this.activityService = activityService;
     }
 
     @Operation(summary = "Register a new user", description = "Creates a new user account")
@@ -63,13 +66,14 @@ public class AuthController {
     public ResponseEntity<?> register(
             @Parameter(description = "User registration data") @Valid @RequestBody RegisterRequest request) {
 
-        User user =
-                new User(null, request.getName(), request.getEmail(), passwordEncoder.encode(request.getPassword()));
+        User user = new User(
+                null,
+                request.getName(),
+                request.getEmail(),
+                passwordEncoder.encode(request.getPassword()),
+                UserRole.CLIENT);
 
         User savedUser = userService.addUser(user);
-
-        activityService.logActivity(
-                savedUser.getId(), "REGISTRATION", "Account created successfully", "pi pi-user-plus");
 
         Map<String, String> response = new HashMap<>();
 
@@ -98,8 +102,6 @@ public class AuthController {
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         User user = userService.getUserByEmail(request.getEmail());
         final String token = jwtUtils.generateToken(userDetails);
-
-        activityService.logActivity(user.getId(), "LOGIN", "Logged in", "pi pi-sign-in");
 
         return ResponseEntity.ok(new AuthResponse(token));
     }

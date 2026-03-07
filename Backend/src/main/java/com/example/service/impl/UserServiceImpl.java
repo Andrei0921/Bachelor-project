@@ -1,45 +1,106 @@
 package com.example.service.impl;
 
 import com.example.domain.User;
+import com.example.domain.validator.UserValidator;
+import com.example.exception.NotFoundException;
+import com.example.exception.ValidationException;
+import com.example.repository.UserRepository;
 import com.example.service.UserService;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
+import java.util.Optional;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private final UserRepository userRepository;
+    private final UserValidator userValidator;
+
+    public UserServiceImpl(UserRepository userRepository, UserValidator userValidator) {
+        this.userRepository = userRepository;
+        this.userValidator = userValidator;
+    }
+
     @Override
+    @Transactional
     public User addUser(User user) {
-        return null;
+        userValidator.validate(user);
+
+        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+        if (existingUser.isPresent()) {
+            throw new ValidationException("Email already exists!");
+        }
+        return userRepository.save(user);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User getUser(Long id) {
-        return null;
+        if (id == null) throw new IllegalArgumentException("User ID must not be null.");
+
+        return userRepository
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException("User with id " + id + " not found"));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Collection<User> getAllUsers() {
-        return List.of();
+        return userRepository.findAll();
     }
 
     @Override
+    @Transactional
     public User updateUser(User user) {
-        return null;
+        if (user == null) throw new IllegalArgumentException("User must not be null.");
+        if (user.getId() == null) throw new IllegalArgumentException("Id must not be null.");
+
+        userValidator.validate(user);
+
+        if (userRepository.findById(user.getId()).isEmpty())
+            throw new NotFoundException("User with id " + user.getId() + " not found");
+
+        Optional<User> userWithSameEmail = userRepository.findByEmail(user.getEmail());
+        if (userWithSameEmail.isPresent() && !userWithSameEmail.get().getId().equals(user.getId())) {
+            throw new ValidationException("Email already exists!");
+        }
+
+        return userRepository.save(user);
     }
 
     @Override
-    public void deleteUser(Long id) {}
+    @Transactional
+    public void deleteUser(Long id) {
+        if (id == null) throw new IllegalArgumentException("Id must not be null");
+
+        if (userRepository.findById(id).isEmpty()) throw new NotFoundException("User with id " + id + " not found");
+
+        userRepository.deleteById(id);
+    }
 
     @Override
+    @Transactional(readOnly = true)
     public User getUserByEmail(String email) {
-        return null;
+        if (email == null || email.isBlank()) throw new IllegalArgumentException("Email must not be null or blank");
+
+        return userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User with email " + email + " not found"));
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+        String role = user.getRole().name();
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)));
     }
 }

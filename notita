@@ -1,0 +1,222 @@
+1. USER & PROFIL
+
+User
+
+user_id
+
+email
+
+password_hash
+
+created_at / updated_at
+
+UserProfile (poți combina cu User dacă vrei)
+
+user_id
+
+nume / prenume
+
+vârstă / data nașterii
+
+limba
+
+timezone
+
+preferințe notificări
+
+obiective (x perieri/zi)
+
+are aparat dentar?
+
+nivel sensibilitate
+
+✅ 2. ONBOARDING
+
+Nu are nevoie neapărat de entități în DB (doar ecrane în app).
+Dar dacă vrei să urmărești progres onboarding:
+
+UserOnboarding
+
+user_id
+
+completat: true/false
+
+data finalizare
+
+✅ 3. EDUCAȚIE (contenut text + imagini)
+
+Entități pentru resursele educative:
+
+EducationalContent
+
+content_id
+
+titlu
+
+text
+
+imagini (list/URL)
+
+categorie (periaj, dietă, carii, copii…)
+
+tip (text, imagine, eventual video)
+
+Poți folosi YouTube dacă încorporezi embed.
+Nu redistribui video-ul, doar îl arăți prin embed → legal.
+
+✅ 4. MODEL 3D + INFORMAȚII DESPRE DINȚI
+
+Ai nevoie de două entități simple:
+
+Tooth
+
+tooth_id (ex: 11, 21 — sistem FDI)
+
+nume (incisiv, molar...)
+
+descriere anatomică
+
+poziție în model 3D (opțional)
+
+ToothInfo
+
+tooth_id
+
+detalii: igienizare corectă, probleme comune, curiozități
+
+animație asociată (opțional)
+
+✅ 5. PERIAJ GHIDAT (guided brushing)
+
+Aici e componenta cea mai “complexă”.
+
+5.1. BrushingRoutine (set de pași predefiniți)
+
+routine_id
+
+nume (ex: “Periaj standard 2 minute”)
+
+durată totală
+
+5.2. BrushingStep (fiecare pas din animație)
+
+step_id
+
+routine_id
+
+zona: ex. “incisivi superiori anterior”
+
+durata
+
+instrucțiuni text
+
+referință către zona modelului 3D
+
+5.3. BrushingSession (sesiunea reală a userului)
+
+session_id
+
+user_id
+
+start_time / end_time
+
+scor
+
+zone periate corect / incorect
+
+streak update (pentru user)
+
+✅ 6. QUIZ-URI
+
+Ai nevoie de structura clasică:
+
+Quiz
+
+quiz_id
+
+titlu
+
+descriere
+
+categorie
+
+QuizQuestion
+
+question_id
+
+quiz_id
+
+întrebare
+
+tip (single choice, multi, true/false)
+
+QuizAnswer
+
+answer_id
+
+question_id
+
+text
+
+is_correct
+
+QuizResult
+
+result_id
+
+user_id
+
+quiz_id
+
+scor
+
+răspunsuri greșite
+
+timp finalizare
+
+✅ 7. PROGRES
+
+Două surse de progres: periaj + quiz-uri.
+
+ProgressSummary (opțional, dar util)
+
+user_id
+
+total_quiz_points
+
+total_brushing_minutes
+
+zile consecutive periate ('streak')
+
+nivel (gamification)
+
+✅ 8. NOTIFICĂRI
+
+Pentru remindere gen “E timpul să te speli pe dinți”.
+
+Notification
+
+notification_id
+
+user_id
+
+tip (brushing reminder, educational tip…)
+
+text
+
+ora programată (ex: 08:00, 21:00)
+
+active (true/false)
+
+
+
+
+https://www.stockvault.net/data/2016/11/10/215518/preview16.jpg
+
+
+https://freestocktextures.com/photos-decay/
+
+https://ambientcg.com/view?id=SurfaceImperfections011
+
+https://ambientcg.com/view?id=Ground054
+

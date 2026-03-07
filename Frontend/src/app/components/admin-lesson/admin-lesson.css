@@ -1,0 +1,93 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #111827;
+}
+
+.muted {
+  margin: 6px 0 0;
+  color: #6b7280;
+}
+
+.card :host ::ng-deep .p-card {
+  border-radius: 16px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-weight: 600;
+  color: #111827;
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+
+.err {
+  color: #b91c1c;
+}
+
+.toolbar {
+  border: 0;
+  padding: 0;
+}
+
+.loading {
+  color: #6b7280;
+}
+
+.title-cell {
+  font-weight: 700;
+}
+
+.content-preview {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: #374151;
+}
+
+.thumb {
+  width: 96px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.row-actions {
+  display: flex;
+  gap: 6px;
+}
+

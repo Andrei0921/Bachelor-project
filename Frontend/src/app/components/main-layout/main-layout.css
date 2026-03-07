@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+.layout-container {
+  --sidebar-w: 280px;
+  --sidebar-w-collapsed: 72px;
+  min-height: 100vh;
+}
+
+.layout-container.sidebar-collapsed {
+  --sidebar-w: var(--sidebar-w-collapsed);
+}
+
+.page-content {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+}
+

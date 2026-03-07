@@ -1,0 +1,69 @@
+<div class="layout">
+  <div #container class="viewer"></div>
+
+  <!-- info dinte (click) -->
+  <p-card *ngIf="selectedToothInfo && !brushingActive" class="info-card">
+    <h2>{{ selectedToothInfo.name }}</h2>
+    <p><strong>Funcție:</strong> {{ selectedToothInfo.functie }}</p>
+    <p><strong>Pozitie:</strong> {{ selectedToothInfo.pozitie }}</p>
+    <p><strong>Număr rădăcini:</strong> {{ selectedToothInfo.nr_radacini }}</p>
+    <p><strong>Eruptie:</strong> {{ selectedToothInfo.eruptie }}</p>
+  </p-card>
+
+  <!-- card periaj (live) -->
+  <p-card *ngIf="brushingActive" class="info-card">
+    <h2>Periaj ghidat</h2>
+    <p><em>Rezultatul final se calculează la Stop.</em></p>
+  </p-card>
+
+  <!-- rezumat rezultate după stop -->
+  <p-card *ngIf="selectedToothInfo && !brushingActive && sessionDone" class="info-card">
+    <h2>Rezultate periaj {{ selectedToothInfo.name }}</h2>
+
+    <p>
+      <strong>Rezultat:</strong>
+      {{ selectedToothResult }}
+    </p>
+
+    <div *ngIf="selectedToothAdvice.length > 0">
+      <p><strong>Recomandări:</strong></p>
+      <ul>
+        <li *ngFor="let a of selectedToothAdvice">
+          {{ a }}
+        </li>
+      </ul>
+    </div>
+
+    <div *ngIf="selectedToothAdvice.length === 0">
+      <p><em>Nu există recomandări pentru acest dinte.</em></p>
+    </div>
+  </p-card>
+
+  <div
+    class="brush-cursor"
+    *ngIf="brushingActive && shiftDown"
+    [style.left.px]="cursorX"
+    [style.top.px]="cursorY">
+  </div>
+</div>
+
+<!-- slider carii -->
+<div style="position: absolute; bottom: 20px; left: 20px; width: 250px; z-index: 999;">
+  <p-slider
+    [min]="0"
+    [max]="4"
+    [step]="1"
+    [(ngModel)]="cariesValue"
+    (ngModelChange)="onCariesChange($event)">
+  </p-slider>
+</div>
+
+<!-- buton start/stop -->
+<div class="controls">
+  <p-button
+    label="{{ brushingActive ? 'Stop periaj' : 'Start periaj' }}"
+    (click)="toggleBrushing()"
+    class="p-button-success">
+  </p-button>
+</div>
+
