@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import {ToastService} from '../../services/toast.service';
+import {Observable} from 'rxjs';
 
 export interface Toast {
   id: number;
@@ -11,14 +13,19 @@ export interface Toast {
   selector: 'app-toast',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './toast.html'
+  templateUrl: './toast.html',
+  styleUrls: ['./toast.css']
 })
 
 export class ToastComponent {
-  @Input() toasts: Toast[] = [];
+  toasts$: Observable<Toast[]>;
+
+  constructor(public toastService: ToastService) {
+    this.toasts$ = this.toastService.toasts$;
+  }
 
   removeToast(id: number): void {
-    this.toasts = this.toasts.filter(t => t.id !== id);
+    this.toastService.remove(id);
   }
 
   getIcon(type: string): string {

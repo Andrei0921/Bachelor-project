@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface QuizResultRepository extends JpaRepository<QuizResult, Long> {
-    Optional<QuizResult> findTopByUserIdOrderByIdDesc(Long userId);
+    Optional<QuizResult> findTopByUserIdAndQuizIdOrderByScorDesc(Long userId, Long quizId);
 
     Optional<QuizResult> findFirstByUserId(Long userId);
 }

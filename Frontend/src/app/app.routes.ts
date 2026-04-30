@@ -16,14 +16,21 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   {
-    path: 'admin/quiz',
-    canActivate: [adminGuard],
-    component: AdminQuiz
-  },
-  {
-    path: 'admin/lesson',
-    canActivate: [adminGuard],
-    component: AdminLesson
+    path: '',
+    canActivate: [AuthGuard],
+    component: MainLayoutComponent,
+    children: [
+    {
+      path: 'admin/quiz',
+      canActivate: [adminGuard],
+      component: AdminQuiz
+    },
+    {
+      path: 'admin/lesson',
+      canActivate: [adminGuard],
+      component: AdminLesson
+    }
+    ]
   },
   {
     path: '',

@@ -130,15 +130,20 @@ public class QuizController {
         return ResponseEntity.ok(quizResultService.addQuizResult(dto));
     }
 
-    @GetMapping(value = "/results/last/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<QuizResultDTO> getLastResult(@PathVariable Long userId) {
-        logger.debug("Fetching last quiz result for user {}", userId);
-        return ResponseEntity.ok(quizResultService.getLastQuizResult(userId));
+    @GetMapping(value = "/results/best", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<QuizResultDTO> getBestResult(@RequestParam Long userId, @RequestParam Long quizId) {
+        logger.debug("Fetching best quiz result for user {}", userId);
+        return ResponseEntity.ok(quizResultService.getBestQuizResult(userId, quizId));
     }
 
     @GetMapping(value = "/results/by-user/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<QuizResultDTO> getByUser(@PathVariable Long userId) {
         logger.debug("Fetching results by user {}", userId);
         return ResponseEntity.ok(quizResultService.getQuizResultByUserId(userId));
+    }
+
+    @PostMapping(value = "/submit", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<QuizResultDTO> submitQuiz(@RequestBody QuizSubmitDTO dto) {
+        return ResponseEntity.ok(quizResultService.submitQuiz(dto));
     }
 }

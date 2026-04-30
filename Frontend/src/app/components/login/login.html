@@ -1,42 +1,50 @@
 <div class="login-page">
-  <div class="login-box">
-    <h1></h1>
-    <h2>Welcome Back!</h2>
-    <p class="subtitle">Please login to your account</p>
+    <section class="login-box">
+      <div class="box-header">
+        <h2>Bine ai revenit</h2>
+        <p class="subtitle">Conectează-te pentru a continua.</p>
+      </div>
 
-    <form (ngSubmit)="onSubmit()">
-      <input
-        [(ngModel)]="email"
-        name="email"
-        placeholder="Email"
-        required
-        type="email"
-        pInputText
-        class="w-full"/>
+      <form class="login-form" (ngSubmit)="onSubmit()">
+        <div class="form-field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="exemplu@email.com"
+            required
+            type="email"
+            pInputText
+            class="w-full"/>
+        </div>
 
-      <p-password
-        [(ngModel)]="password"
-        name="password"
-        placeholder="Password"
-        [toggleMask]="true"
-        [feedback]="false"
-        styleClass="w-full"
-        inputStyleClass="w-full"
-        required>
-      </p-password>
+        <div class="form-field">
+          <label for="password">Parolă</label>
+          <p-password
+            inputId="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Introdu parola"
+            [toggleMask]="true"
+            [feedback]="false"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+            required>
+          </p-password>
+        </div>
 
-      <p-button
-        class="login-btn"
-        type="submit"
-        label="Login"
-        [loading]="isLoading"
-        styleClass="w-full">
-      </p-button>
+        <p-button
+          class="login-btn"
+          type="submit"
+          label="Login"
+          [loading]="isLoading"
+          styleClass="w-full">
+        </p-button>
+      </form>
 
-    </form>
+      <p class="register-text">Nu ai cont? <a [routerLink]="['/register']">Creează unul</a></p>
 
-    <p class="register-text">Don't have an account? <a [routerLink]="['/register']">Register</a></p>
-
-    <p-message *ngIf="errorMessage" [text]="errorMessage" severity="error" styleClass="w-full"></p-message>
-  </div>
+      <p-message *ngIf="errorMessage" [text]="errorMessage" severity="error" styleClass="w-full inline-message"></p-message>
+    </section>
 </div>

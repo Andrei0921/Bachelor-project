@@ -11,6 +11,7 @@ import { AuthControllerService } from '../../api';
 import { TokenService } from '../../services/token.service';
 import { FormService } from '../../services/form.service';
 import { HttpResponseService } from '../../services/http-response.service';
+import {ToastService} from '../../services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -40,6 +41,7 @@ export class LoginComponent {
     private router: Router,
     private formUtils: FormService,
     private httpResponseService: HttpResponseService,
+    private toastService: ToastService,
   ) {
   }
 
@@ -86,9 +88,11 @@ export class LoginComponent {
         await this.router.navigate([isAdmin ? '/admin/quiz' : '/home']);
       } else {
         this.errorMessage = 'No authentication token received';
+        this.toastService.error(this.errorMessage);
       }
     } catch (error) {
       this.errorMessage = 'Failed to process login response';
+      this.toastService.error(this.errorMessage);
     }
   }
 
@@ -129,6 +133,7 @@ export class LoginComponent {
       this.errorMessage = await this.httpResponseService.handleError(error, 'Login failed. Please try again.');
     } catch {
       this.errorMessage = 'Login failed. Please try again.';
+
     }
 
     this.password = '';

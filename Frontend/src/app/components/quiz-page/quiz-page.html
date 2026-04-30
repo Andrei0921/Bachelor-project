@@ -1,8 +1,8 @@
 <div class="quiz-container">
-  <ng-container *ngIf="!activeQuiz && !isLoading; else loadingTpl">
+  <div *ngIf="isLoading" class="loading">Se încarcă...</div>
+  <ng-container *ngIf="!isLoading && !activeQuiz">
     <div class="page-head">
       <div>
-        <p class="eyebrow">QUIZ CENTER</p>
         <h2 class="title">Alege un quiz</h2>
         <p class="subtitle">Apasă pe un quiz ca să vezi detaliile, scorul maxim și butonul de start.</p>
       </div>
@@ -30,14 +30,13 @@
             </div>
 
             <div class="stat-box" *ngIf="bestResultByQuizId[qid] as r; else noScoreTpl">
-              <span class="stat-label">Scor maxim</span>
+              <span class="stat-label">Scor maxim: </span>
               <strong>{{ r.scor }} / {{ totalByQuizId[qid]}}</strong>
             </div>
 
             <ng-template #noScoreTpl>
               <div class="stat-box stat-box--muted">
-                <span class="stat-label">Scor maxim</span>
-                <strong>{{ userId ? 'Încă nu există' : 'Disponibil după login' }}</strong>
+                <span class="stat-label">Scor maxim: Încă nu există</span>
               </div>
             </ng-template>
           </div>
@@ -53,7 +52,6 @@
   <ng-container *ngIf="activeQuiz">
     <div class="runner-header">
       <div>
-        <p class="eyebrow">QUIZ IN PROGRES</p>
         <h2 class="title">{{ activeQuiz.titlu }}</h2>
         <div class="subtitle" *ngIf="activeQuiz.descriere">{{ activeQuiz.descriere }}</div>
       </div>
@@ -142,15 +140,9 @@
     <div *ngIf="result" class="result">
       <p class="eyebrow">REZULTAT FINAL</p>
 
-      <div class="result-grid">
-        <div class="result-stat">
-          <span>Scor</span>
-          <strong>{{ result.scor }} / {{ questions.length }}</strong>
-        </div>
-        <div class="result-stat">
-          <span>Răspunsuri greșite</span>
-          <strong>{{ result.raspunsuriGresite }}</strong>
-        </div>
+      <div class="result-stat">
+        <span>Scor</span>
+        <strong>{{ result.scor }} / {{ questions.length }}</strong>
       </div>
 
       <div class="result-details" *ngIf="questions.length">
@@ -177,9 +169,6 @@
     </div>
   </ng-container>
 
-  <ng-template #loadingTpl>
-    <div class="loading">Se încarcă...</div>
-  </ng-template>
 </div>
 
 

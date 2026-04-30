@@ -9,6 +9,7 @@ import {MessageModule} from 'primeng/message';
 import {AuthControllerService} from '../../api';
 import {FormService} from '../../services/form.service';
 import {HttpResponseService} from '../../services/http-response.service';
+import {ToastService} from '../../services/toast.service';
 
 interface FieldErrors {
   name: string;
@@ -29,7 +30,7 @@ interface FieldErrors {
     InputTextModule,
     PasswordModule,
     ButtonModule,
-    MessageModule
+    MessageModule,
   ]
 })
 export class RegisterComponent {
@@ -54,7 +55,8 @@ export class RegisterComponent {
     private authController: AuthControllerService,
     private router: Router,
     private formUtils: FormService,
-    private httpResponseService: HttpResponseService
+    private httpResponseService: HttpResponseService,
+    private toastService: ToastService
   ) {
   }
 
@@ -105,6 +107,7 @@ export class RegisterComponent {
       }, 2000);
     } catch (error) {
       this.errorMessage = 'Failed to process registration response';
+      this.toastService.error(this.errorMessage);
     }
   }
 
@@ -117,8 +120,10 @@ export class RegisterComponent {
 
     try {
       this.errorMessage = await this.httpResponseService.handleError(error, 'Registration failed. Please try again.');
+      this.toastService.error(this.errorMessage);
     } catch {
       this.errorMessage = 'Registration failed. Please try again.';
+      this.toastService.error(this.errorMessage);
     }
 
     this.password = '';

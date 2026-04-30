@@ -1,13 +1,26 @@
-<div *ngIf="lesson">
-  <h2>{{ lesson.titlu }}</h2>
-  <p>{{ lesson.descriere }}</p>
-  <div [innerHTML]="lesson.contentText"></div>
-  <img *ngIf="lesson.imagineUrls" [src]="lesson.imagineUrls" alt="lesson image" />
-</div>
+<div class="lesson-shell" *ngIf="lesson">
+  <section class="lesson-hero">
+    <div class="lesson-text">
+      <span class="eyebrow">Lecția {{ currentLessonIndex + 1 }} din {{ totalLessons }}</span>
+      <h1>{{ lesson.titlu }}</h1>
+      <p class="lesson-description">{{ lesson.descriere }}</p>
+    </div>
 
-<p-paginator
-  [rows]="1"
-  [totalRecords]="lessons.length"
-  [first]="currentLessonIndex"
-  (onPageChange)="onPageChange($event)">
-</p-paginator>
+    <div class="lesson-image-wrap" *ngIf="lesson.imagineUrls">
+      <img [src]="lesson.imagineUrls" alt="lesson image" class="lesson-image" />
+    </div>
+  </section>
+
+  <section class="lesson-content-card">
+    <div class="lesson-content" [innerHTML]="lesson.contentText"></div>
+  </section>
+
+  <div class="lesson-pagination">
+    <p-paginator
+      [rows]="1"
+      [totalRecords]="lessons.length"
+      [first]="currentLessonIndex"
+      (onPageChange)="onPageChange($event)">
+    </p-paginator>
+  </div>
+</div>

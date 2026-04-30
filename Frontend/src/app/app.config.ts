@@ -16,6 +16,7 @@ import {ErrorInterceptor} from './interceptors/error.interceptor-interceptor';
 import {provideAnimations} from '@angular/platform-browser/animations';
 import {ToastModule} from 'primeng/toast';
 import {MessageService} from 'primeng/api';
+import { BASE_PATH } from './api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -45,6 +46,7 @@ export const appConfig: ApplicationConfig = {
         ErrorInterceptor
       ])
     ),
+    { provide: BASE_PATH, useValue: '' },
     {
       provide: Configuration,
       useFactory: () => new Configuration({

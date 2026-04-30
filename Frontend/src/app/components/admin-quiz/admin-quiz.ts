@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import {
   AnswerPostDTO,
   AnswerResponseDTO,
@@ -19,6 +19,8 @@ import {Button} from 'primeng/button';
 import {Toolbar} from 'primeng/toolbar';
 import {Checkbox} from 'primeng/checkbox';
 import {InputTextModule} from 'primeng/inputtext';
+import {RadioButtonModule} from 'primeng/radiobutton';
+import {ToastService} from '../../services/toast.service';
 
 @Component({
   selector: 'app-admin-quiz',
@@ -33,8 +35,9 @@ import {InputTextModule} from 'primeng/inputtext';
     Toolbar,
     AccordionPanel,
     InputTextModule,
-    Checkbox,
+    RadioButtonModule,
     AccordionHeader,
+    FormsModule,
   ],
   templateUrl: './admin-quiz.html',
   styleUrl: './admin-quiz.css',
@@ -45,9 +48,11 @@ export class AdminQuiz implements OnInit {
   isLoading = false;
   editingId: number | null = null;
   form: any;
+
   constructor(
     private formBuilder: FormBuilder,
-    private quizController: QuizControllerService
+    private quizController: QuizControllerService,
+    private toastService: ToastService
   ) {
     this.form = this.formBuilder.group({
       titlu: ['', [Validators.required, Validators.minLength(3)]],
@@ -106,7 +111,7 @@ export class AdminQuiz implements OnInit {
     this.isLoading = true;
     this.quizController.getAllQuizzes().subscribe({
       next: (data) => (this.quizzes = data ?? []),
-      error: () => (this.isLoading = false),
+      error: () => { this.isLoading = false; this.toastService.error('Nu am putut încărca quiz-urile.'); },
       complete: () => (this.isLoading = false),
     });
   }
@@ -172,7 +177,7 @@ export class AdminQuiz implements OnInit {
           );
         });
       },
-      error: () => (this.isLoading = false),
+      error: () => { this.isLoading = false; this.toastService.error('Nu am putut încărca quiz-ul selectat.'); },
       complete: () => (this.isLoading = false),
     });
   }
@@ -182,10 +187,32 @@ export class AdminQuiz implements OnInit {
 
     this.isLoading = true;
     this.quizController.deleteQuiz(id).subscribe({
-      next: () => this.load(),
-      error: () => (this.isLoading = false),
+      next: () =>  { this.toastService.success('Quiz-ul a fost șters.'); this.load(); },
+      error: () => { this.isLoading = false; this.toastService.error('Nu am putut șterge quiz-ul.'); },
       complete: () => (this.isLoading = false),
     });
+  }
+
+  setSingleCorrect(qIndex: number, aIndex: number): void {
+    const answers = this.answersOf(qIndex);
+
+    answers.controls.forEach((ctrl, idx) => {
+      ctrl.get('isCorrect')?.setValue(idx === aIndex, { emitEvent: false });
+    });
+  }
+
+  hasExactlyOneCorrectAnswerPerQuestion(): boolean {
+    return this.questions.controls.every((qCtrl) => {
+      const answersFA = qCtrl.get('answers') as FormArray;
+      const correctCount = answersFA.controls.filter(a => !!a.get('isCorrect')?.value).length;
+      return correctCount === 1;
+    });
+  }
+
+  getCorrectAnswerIndex(qIndex: number): number | null {
+    const answers = this.answersOf(qIndex);
+    const idx = answers.controls.findIndex(ctrl => !!ctrl.get('isCorrect')?.value);
+    return idx >= 0 ? idx : null;
   }
 
 
@@ -194,6 +221,11 @@ export class AdminQuiz implements OnInit {
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      return;
+    }
+
+    if (!this.hasExactlyOneCorrectAnswerPerQuestion()) {
+      this.toastService.warning('Fiecare întrebare trebuie să aibă exact un singur răspuns corect.');
       return;
     }
 
@@ -231,7 +263,7 @@ export class AdminQuiz implements OnInit {
             switchMap((savedQuestion) => {
               const questionId = savedQuestion.id as number;
 
-              // foarte important: păstrezi id-ul nou în formular
+
               if (!qId) {
                 qCtrl.patchValue({ id: questionId });
               }
@@ -271,12 +303,13 @@ export class AdminQuiz implements OnInit {
       })
     ).subscribe({
       next: () => {
+        this.toastService.success(this.editingId ? 'Quiz-ul a fost actualizat.' : 'Quiz-ul a fost creat.');
         this.newQuiz();
         this.load();
         this.isLoading = false;
       },
       error: (err) => {
-        console.error('save error', err);
+        this.toastService.error('Nu am putut salva quiz-ul.');
         this.isLoading = false;
       }
     });

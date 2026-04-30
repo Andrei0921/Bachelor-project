@@ -1,12 +1,17 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, ViewChild} from '@angular/core';
 import {
   Scene,
   PerspectiveCamera,
   WebGLRenderer,
   Color,
   AmbientLight,
-  DirectionalLight, Vector3, Box3,
-  Raycaster, Vector2, Mesh, TextureLoader,MeshStandardMaterial,
+  DirectionalLight,
+  Vector3,
+  Box3,
+  Raycaster,
+  Vector2,
+  Mesh,
+  TextureLoader, MeshStandardMaterial,
 } from 'three';
 import * as THREE from 'three';
 import { GLTFLoader, DRACOLoader } from 'three-stdlib';
@@ -55,14 +60,12 @@ export class ModelComponent implements AfterViewInit {
   private toothStats = new Map<string, ToothStats>();
   private toothResult = new Map<string, ToothQuality>();
   private readonly GRID_SIZE = 20;
-  private readonly evaluateUrl = 'http://localhost:8080/api/brushing/evaluate';
   public sessionDone = false;
   public resultsArray: Array<{ toothName: string; result: ToothQuality }> = [];
   private toothAdvice = new Map<string, string[]>();
   public shiftDown = false;
   public cursorX = 0;
   public cursorY = 0;
-
 
   constructor(private readonly brushingService: BrushingControllerService) {}
 
@@ -112,17 +115,14 @@ export class ModelComponent implements AfterViewInit {
     this.scene = new Scene();
     this.scene.background = new Color(0x333333);
 
-    this.camera = new PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    this.camera.position.set(0, 1, 5);
+    const { width, height } = this.getViewportSize();
 
-    // RENDERER
-    this.renderer = new WebGLRenderer({ antialias: true });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.camera = new PerspectiveCamera(75, width / height, 0.1, 1000);
+    this.camera.position.set(-0.2, 0.25, 5);
+
+    this.renderer = new WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setSize(width, height);
     this.container.nativeElement.appendChild(this.renderer.domElement);
 
     const ambientLight = new AmbientLight(0xffffff, 0.7);
@@ -164,6 +164,7 @@ export class ModelComponent implements AfterViewInit {
       const center = box.getCenter(new Vector3());
 
       model.position.sub(center);
+      model.position.x -= size.x * 0.08;
 
       this.scene.add(model);
 
@@ -173,12 +174,12 @@ export class ModelComponent implements AfterViewInit {
       let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
       cameraZ *= 2.2;
 
-      this.camera.position.set(0, 0, cameraZ);
+      this.camera.position.set(-maxDim * 0.1, size.y * 0.02, cameraZ);
       this.camera.near = cameraZ / 100;
       this.camera.far = cameraZ * 100;
       this.camera.updateProjectionMatrix();
 
-      this.controls.target.set(0, 0, 0);
+      this.controls.target.set(-maxDim * 0.08, 0, 0);
       this.controls.update();
 
       this.loadTextures();
@@ -190,6 +191,27 @@ export class ModelComponent implements AfterViewInit {
       'mousemove',
       this.onBrushMove
     );
+  }
+
+
+  @HostListener('window:resize')
+  onResize(): void {
+    if (!this.camera || !this.renderer) {
+      return;
+    }
+
+    const { width, height } = this.getViewportSize();
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(width, height);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  }
+
+  private getViewportSize() {
+    const host = this.container?.nativeElement as HTMLElement;
+    const width = Math.max(host?.clientWidth ?? 0, 640);
+    const height = Math.max(host?.clientHeight ?? 0, 620);
+    return { width, height };
   }
 
 

@@ -5,7 +5,6 @@ public class QuizResultDTO {
     private Long userId;
     private Long quizId;
     private Integer scor;
-    private Integer raspunsuriGresite;
 
     public QuizResultDTO() {}
 
@@ -39,13 +38,5 @@ public class QuizResultDTO {
 
     public void setScor(Integer scor) {
         this.scor = scor;
-    }
-
-    public Integer getRaspunsuriGresite() {
-        return raspunsuriGresite;
-    }
-
-    public void setRaspunsuriGresite(Integer raspunsuriGresite) {
-        this.raspunsuriGresite = raspunsuriGresite;
     }
 }

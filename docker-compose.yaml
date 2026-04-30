@@ -12,7 +12,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   ai:
-    build: ./AI
+    build: ./BrushingAI
     container_name: app-ai
     ports:
       - "5001:5001"
@@ -29,7 +29,7 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/Licenta
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/Licenta
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: andrei921
       JWT_SECRET: bc6097db3ef6a05e98e6c7a06b756e23f546244076194eef11f7e94b29590d2a
@@ -37,6 +37,7 @@ services:
       AI_BASE_URL: http://ai:5001
     volumes:
       - uploads_data:/app/uploads
+      - training_data:/app/data
 
   frontend:
     build: ./Frontend
@@ -45,3 +46,8 @@ services:
       - backend
     ports:
       - "80:80"
+
+volumes:
+  postgres_data:
+  uploads_data:
+  training_data:

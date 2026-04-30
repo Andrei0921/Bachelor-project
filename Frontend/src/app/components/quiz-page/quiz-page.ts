@@ -3,7 +3,7 @@ import {
   QuestionResponseDTO,
   QuizControllerService,
   QuizResponseDTO,
-  QuizResultDTO,
+  QuizResultDTO, QuizSubmitDTO,
   UserControllerService
 } from '../../api';
 import { CommonModule } from '@angular/common';
@@ -120,22 +120,26 @@ export class QuizPage implements OnInit {
   private loadUserResults(): void {
     if (!this.userId) return;
 
-    this.quizApi.getByUser(this.userId).pipe(
-      catchError(() => of(null))
-    ).subscribe((res: any) => {
-      const arr: QuizResultDTO[] = Array.isArray(res) ? res : (res ? [res] : []);
+    const calls = (this.quizzes ?? [])
+      .filter(q => !!q.id)
+      .map(q =>
+        this.quizApi.getBestResult(this.userId as number, q.id as number).pipe(
+          map((res) => ({ quizId: q.id as number, result: res })),
+          catchError(() => of({ quizId: q.id as number, result: null }))
+        )
+      );
 
+    if (!calls.length) {
+      this.bestResultByQuizId = {};
+      return;
+    }
+
+    forkJoin(calls).subscribe((rows) => {
       const byQuiz: Record<number, QuizResultDTO> = {};
-      for (const r of arr) {
-        const qid = r.quizId as number | undefined;
-        if (!qid) continue;
 
-        const prev = byQuiz[qid];
-        const prevScore = prev?.scor ?? -1;
-        const currentScore = r.scor ?? -1;
-
-        if (!prev || currentScore > prevScore || (currentScore === prevScore && (r.id ?? 0) > (prev.id ?? 0))) {
-          byQuiz[qid] = r;
+      for (const row of rows) {
+        if (row.result) {
+          byQuiz[row.quizId] = row.result;
         }
       }
 
@@ -209,46 +213,31 @@ export class QuizPage implements OnInit {
   finish(): void {
     if (!this.activeQuiz?.id || !this.hasSelectedCurrentAnswer) return;
 
-    const total = this.questions.length;
-    let correct = 0;
+    const answers = this.questions
+      .filter(q => !!q.id && this.selectedByQuestionId[q.id!] !== undefined)
+      .map(q => ({
+        questionId: q.id as number,
+        answerId: this.selectedByQuestionId[q.id as number] as number
+      }));
 
-    for (const q of this.questions) {
-      const qid = q.id;
-      if (!qid) continue;
-      const selectedAnswerId = this.selectedByQuestionId[qid];
-      const selected = (q.answers ?? []).find(a => a.id === selectedAnswerId);
-      if (selected?.isCorrect) correct += 1;
-    }
-
-    const wrong = Math.max(0, total - correct);
-
-    const result: QuizResultDTO = {
+    const payload : QuizSubmitDTO = {
       userId: this.userId ?? undefined,
       quizId: this.activeQuiz.id,
-      scor: correct,
-      raspunsuriGresite: wrong,
+      answers
     };
+    this.isLoading = true;
 
-    if (this.userId) {
-      this.quizApi.addResult(result).pipe(
-        catchError(() => of(result))
-      ).subscribe((saved) => {
-        this.result = saved ?? result;
+    this.quizApi.submitQuiz(payload).pipe(
+      catchError(() => of(null))
+    ).subscribe((saved) => {
+      console.log('submit result:', saved);
+      this.result = saved ?? null;
+      this.isLoading = false;
 
-        if (this.activeQuiz?.id) {
-          const quizId = this.activeQuiz.id;
-          const prevBest = this.bestResultByQuizId[quizId];
-          const prevScore = prevBest?.scor ?? -1;
-          const newScore = this.result?.scor ?? -1;
-
-          if (!prevBest || newScore >= prevScore) {
-            this.bestResultByQuizId[quizId] = this.result;
-          }
-        }
-      });
-    } else {
-      this.result = result;
-    }
+      if (this.userId) {
+        this.loadUserResults();
+      }
+    });
   }
 
   isCorrect(question: QuestionResponseDTO): boolean | null {

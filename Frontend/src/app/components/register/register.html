@@ -1,0 +1,87 @@
+<div class="register-page">
+    <section class="register-box">
+      <div class="box-header">
+        <h2>Creează cont</h2>
+        <p class="subtitle">Completează datele de mai jos.</p>
+      </div>
+
+      <form class="register-form" (ngSubmit)="onRegister()">
+        <div class="form-field">
+          <label for="name">Username</label>
+          <input
+            id="name"
+            [(ngModel)]="name"
+            name="name"
+            placeholder="Alege un nume de utilizator"
+            required
+            type="text"
+            pInputText
+            class="w-full"
+            [class.p-invalid]="fieldErrors.name"/>
+          <div *ngIf="fieldErrors.name" class="field-error">{{ fieldErrors.name }}</div>
+        </div>
+
+        <div class="form-field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="exemplu@email.com"
+            required
+            type="email"
+            pInputText
+            class="w-full"
+            [class.p-invalid]="fieldErrors.email"/>
+          <div *ngIf="fieldErrors.email" class="field-error">{{ fieldErrors.email }}</div>
+        </div>
+
+        <div class="form-field">
+          <label for="password">Parolă</label>
+          <p-password
+            inputId="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Alege o parolă"
+            [toggleMask]="true"
+            [feedback]="false"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+            [class.p-invalid]="fieldErrors.password"
+            required>
+          </p-password>
+          <div *ngIf="fieldErrors.password" class="field-error">{{ fieldErrors.password }}</div>
+        </div>
+
+        <div class="form-field">
+          <label for="confirmPassword">Confirmă parola</label>
+          <p-password
+            inputId="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            placeholder="Repetă parola"
+            [toggleMask]="true"
+            [feedback]="false"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+            [class.p-invalid]="fieldErrors.confirmPassword"
+            required>
+          </p-password>
+          <div *ngIf="fieldErrors.confirmPassword" class="field-error">{{ fieldErrors.confirmPassword }}</div>
+        </div>
+
+        <p-message *ngIf="successMessage" severity="success" [text]="successMessage" styleClass="w-full success-message"></p-message>
+
+        <p-button
+          class="register-btn"
+          type="submit"
+          label="Register"
+          [loading]="isLoading"
+          styleClass="w-full">
+        </p-button>
+      </form>
+
+      <p class="login-text">Ai deja cont? <a [routerLink]="['/login']">Autentifică-te</a></p>
+      <p-message *ngIf="errorMessage" [text]="errorMessage" severity="error" styleClass="w-full inline-message"></p-message>
+    </section>
+</div>

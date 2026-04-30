@@ -8,6 +8,7 @@ import {Toolbar} from 'primeng/toolbar';
 import {Button} from 'primeng/button';
 import {InputTextModule} from 'primeng/inputtext';
 import {FileUploadModule} from 'primeng/fileupload';
+import {ToastService} from '../../services/toast.service';
 
 @Component({
   selector: 'app-admin-lesson',
@@ -35,7 +36,10 @@ export class AdminLesson implements OnInit {
   selectedImage: File | null = null;
   preview: string | null = null;
 
-  constructor(private formBuilder: FormBuilder, private lessonController: LessonControllerService) {
+  constructor(private formBuilder: FormBuilder,
+              private lessonController: LessonControllerService,
+              private toastService: ToastService
+              ) {
     this.form = this.formBuilder.group({
     titlu: ['', [Validators.required, Validators.minLength(3)]],
     continut: ['', [Validators.required, Validators.minLength(10)]],
@@ -54,7 +58,7 @@ export class AdminLesson implements OnInit {
         this.lessons = data ?? [];
         this.isLoading = false
       },
-      error: () => { this.isLoading = false; },
+      error: () => { this.isLoading = false; this.toastService.error('Nu am putut încărca lecțiile.'); },
     });
   }
 
@@ -109,10 +113,11 @@ export class AdminLesson implements OnInit {
 
     req$.subscribe({
       next: () => {
+        this.toastService.success(this.editingId != null ? 'Lecția a fost actualizată.' : 'Lecția a fost creată.');
         this.startCreate();
         this.load();
       },
-      error: () => (this.isLoading = false),
+      error: () => { this.isLoading = false; this.toastService.error('Nu am putut salva lecția.'); },
       complete: () => (this.isLoading = false),
     });
   }
@@ -122,8 +127,8 @@ export class AdminLesson implements OnInit {
 
     this.isLoading = true;
     this.lessonController.deleteLesson(id).subscribe({
-      next: () => this.load(),
-      error: () => (this.isLoading = false),
+      next: () => { this.toastService.success('Lecția a fost ștearsă.'); this.load(); },
+      error: () => { this.isLoading = false; this.toastService.error('Nu am putut șterge lecția.'); },
       complete: () => (this.isLoading = false),
     });
   }

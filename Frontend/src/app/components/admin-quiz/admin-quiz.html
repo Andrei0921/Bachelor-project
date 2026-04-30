@@ -1,10 +1,4 @@
 <div class="page">
-  <div class="page-head">
-    <div>
-      <h2>Admin - Quiz-uri</h2>
-      <p class="muted">Creaza quiz-uri.</p>
-    </div>
-  </div>
 
   <p-card styleClass="card">
     <ng-template pTemplate="title">
@@ -24,7 +18,7 @@
         </div>
       </div>
 
-      <p-toolbar styleClass="toolbar">
+      <p-toolbar class="toolbar">
         <ng-template pTemplate="left">
           <p-button type="button" label="Nou" icon="pi pi-plus" class="p-button-text" (onClick)="newQuiz()"></p-button>
           <p-button type="button" label="Întrebare" icon="pi pi-list-add" class="p-button-text" (onClick)="addQuestion()"></p-button>
@@ -64,10 +58,13 @@
                   <input pInputText formControlName="text" placeholder="Răspuns" />
 
                   <div class="correct">
-                    <p-checkbox
-                      formControlName="isCorrect"
-                      [binary]="true"
-                    ></p-checkbox>
+                    <p-radiobutton
+                      [name]="'correct-' + qi"
+                      [value]="ai"
+                      [ngModel]="getCorrectAnswerIndex(qi)"
+                      [ngModelOptions]="{ standalone: true }"
+                      (onClick)="setSingleCorrect(qi, ai)">
+                    </p-radiobutton>
                     <span>Corect</span>
                   </div>
 

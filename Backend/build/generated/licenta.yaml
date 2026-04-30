@@ -37,8 +37,8 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Validation failed",
+          "401": {
+            "description": "Authentication failed",
             "content": {
               "application/json": {
                 "schema": {
@@ -47,12 +47,8 @@
               }
             }
           },
-          "404": {
-            "description": "User not found",
-            "content": {}
-          },
-          "401": {
-            "description": "Invalid credentials",
+          "400": {
+            "description": "Data integrity violation",
             "content": {
               "application/json": {
                 "schema": {
@@ -70,6 +66,10 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {}
           },
           "200": {
             "description": "User found",
@@ -113,16 +113,8 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "Invalid user data or ID mismatch",
-            "content": {}
-          },
-          "404": {
-            "description": "User not found",
-            "content": {}
-          },
           "401": {
-            "description": "Invalid credentials",
+            "description": "Authentication failed",
             "content": {
               "application/json": {
                 "schema": {
@@ -130,6 +122,10 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid user data or ID mismatch",
+            "content": {}
           },
           "500": {
             "description": "Internal server error",
@@ -140,6 +136,10 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {}
           },
           "200": {
             "description": "User updated successfully",
@@ -173,8 +173,8 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Validation failed",
+          "401": {
+            "description": "Authentication failed",
             "content": {
               "application/json": {
                 "schema": {
@@ -183,12 +183,8 @@
               }
             }
           },
-          "404": {
-            "description": "User not found",
-            "content": {}
-          },
-          "401": {
-            "description": "Invalid credentials",
+          "400": {
+            "description": "Data integrity violation",
             "content": {
               "application/json": {
                 "schema": {
@@ -206,6 +202,10 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {}
           },
           "204": {
             "description": "User deleted successfully"
@@ -524,28 +524,18 @@
         "description": "Returns a list of all users",
         "operationId": "getAllUsers",
         "responses": {
-          "400": {
-            "description": "Validation failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "401": {
-            "description": "Invalid credentials",
+            "description": "Authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Data integrity violation",
             "content": {
               "application/json": {
                 "schema": {
@@ -556,6 +546,16 @@
           },
           "500": {
             "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -594,32 +594,32 @@
           "required": true
         },
         "responses": {
+          "401": {
+            "description": "Authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid user data",
             "content": {}
           },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -808,6 +808,36 @@
         }
       }
     },
+    "/api/quizzes/submit": {
+      "post": {
+        "tags": [
+          "quiz-controller"
+        ],
+        "operationId": "submitQuiz",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizSubmitDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuizResultDTO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/quizzes/results": {
       "post": {
         "tags": [
@@ -975,32 +1005,32 @@
           "required": true
         },
         "responses": {
+          "401": {
+            "description": "Authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid registration data",
             "content": {}
           },
-          "404": {
-            "description": "Resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1041,8 +1071,22 @@
           "required": true
         },
         "responses": {
+          "401": {
+            "description": "Invalid credentials",
+            "content": {}
+          },
           "400": {
-            "description": "Validation failed",
+            "description": "Data integrity violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1053,20 +1097,6 @@
           },
           "404": {
             "description": "Resource not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid credentials",
-            "content": {}
-          },
-          "500": {
-            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1108,8 +1138,8 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Validation failed",
+          "401": {
+            "description": "Authentication failed",
             "content": {
               "application/json": {
                 "schema": {
@@ -1118,12 +1148,8 @@
               }
             }
           },
-          "404": {
-            "description": "User not found",
-            "content": {}
-          },
-          "401": {
-            "description": "Invalid credentials",
+          "400": {
+            "description": "Data integrity violation",
             "content": {
               "application/json": {
                 "schema": {
@@ -1142,6 +1168,10 @@
               }
             }
           },
+          "404": {
+            "description": "User not found",
+            "content": {}
+          },
           "200": {
             "description": "User found",
             "content": {
@@ -1155,12 +1185,12 @@
         }
       }
     },
-    "/api/quizzes/results/last/{userId}": {
+    "/api/quizzes/results/by-user/{userId}": {
       "get": {
         "tags": [
           "quiz-controller"
         ],
-        "operationId": "getLastResult",
+        "operationId": "getByUser",
         "parameters": [
           {
             "name": "userId",
@@ -1186,16 +1216,25 @@
         }
       }
     },
-    "/api/quizzes/results/by-user/{userId}": {
+    "/api/quizzes/results/best": {
       "get": {
         "tags": [
           "quiz-controller"
         ],
-        "operationId": "getByUser",
+        "operationId": "getBestResult",
         "parameters": [
           {
             "name": "userId",
-            "in": "path",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "quizId",
+            "in": "query",
             "required": true,
             "schema": {
               "type": "integer",
@@ -1416,6 +1455,38 @@
           }
         }
       },
+      "QuizSelectionDTO": {
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "answerId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "QuizSubmitDTO": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "quizId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuizSelectionDTO"
+            }
+          }
+        }
+      },
       "QuizResultDTO": {
         "type": "object",
         "properties": {
@@ -1432,10 +1503,6 @@
             "format": "int64"
           },
           "scor": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "raspunsuriGresite": {
             "type": "integer",
             "format": "int32"
           }

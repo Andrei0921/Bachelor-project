@@ -5,8 +5,7 @@
         <i class="pi pi-sparkles"></i>
       </div>
       <div class="brand-text">
-        <div class="title">Admin</div>
-        <div class="subtitle">Panel</div>
+        <div class="title">{{ brandTitle }}</div>
       </div>
     </div>
 
@@ -24,9 +23,9 @@
     <a
       class="menu-item"
       *ngFor="let item of menuItems"
-      [class.active]="item.active"
       [routerLink]="item.route"
       routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
       (click)="onSelect(item)"
       [pTooltip]="collapsed ? item.label : ''"
       tooltipPosition="right"

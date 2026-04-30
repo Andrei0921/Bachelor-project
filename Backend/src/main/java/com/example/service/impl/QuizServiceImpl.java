@@ -13,6 +13,8 @@ import com.example.service.QuestionService;
 import com.example.service.QuizResultService;
 import com.example.service.QuizService;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,11 +118,11 @@ public class QuizServiceImpl implements QuizService, AnswerService, QuizResultSe
     }
 
     @Override
-    public QuizResultDTO getLastQuizResult(Long id) {
-        QuizResult result = quizResultRepository
-                .findTopByUserIdOrderByIdDesc(id)
-                .orElseThrow(() -> new NotFoundException("No results found for this user"));
-        return QuizResultMapper.toDTO(result);
+    public QuizResultDTO getBestQuizResult(Long id, Long quizId) {
+        return quizResultRepository
+                .findTopByUserIdAndQuizIdOrderByScorDesc(id, quizId)
+                .map(QuizResultMapper::toDTO)
+                .orElse(null);
     }
 
     @Override
@@ -129,6 +131,42 @@ public class QuizServiceImpl implements QuizService, AnswerService, QuizResultSe
                 .findFirstByUserId(id)
                 .orElseThrow(() -> new NotFoundException("Result not found for user"));
         return QuizResultMapper.toDTO(result);
+    }
+
+    @Override
+    @Transactional
+    public QuizResultDTO submitQuiz(QuizSubmitDTO dto) {
+        Quiz quiz = quizRepository.findById(dto.getQuizId()).orElseThrow(() -> new NotFoundException("Quiz not found"));
+
+        User user = userRepository.findById(dto.getUserId()).orElseThrow(() -> new NotFoundException("User not found"));
+
+        int score = calculateScore(quiz, dto);
+
+        QuizResult result = new QuizResult();
+        result.setQuiz(quiz);
+        result.setUser(user);
+        result.setScor(score);
+        QuizResult saved = quizResultRepository.save(result);
+
+        return QuizResultMapper.toDTO(saved);
+    }
+
+    private int calculateScore(Quiz quiz, QuizSubmitDTO dto) {
+        Map<Long, Long> selected = dto.getAnswers().stream()
+                .collect(Collectors.toMap(QuizSelectionDTO::getQuestionId, QuizSelectionDTO::getAnswerId));
+
+        int score = 0;
+
+        for (QuizQuestion q : quiz.getIntrebari()) {
+            Long selectedAnswer = selected.get(q.getId());
+            if (selectedAnswer == null) continue;
+
+            boolean correct = q.getAnswers().stream().anyMatch(a -> a.getId().equals(selectedAnswer) && a.isCorrect());
+
+            if (correct) score++;
+        }
+
+        return score;
     }
 
     @Override

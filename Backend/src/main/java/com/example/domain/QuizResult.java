@@ -18,16 +18,14 @@ public class QuizResult {
     private Quiz quiz;
 
     private Integer scor;
-    private Integer raspunsuriGresite;
 
     public QuizResult() {}
 
-    public QuizResult(Long id, User user, Quiz quiz, Integer scor, Integer raspunsuriGresite) {
+    public QuizResult(Long id, User user, Quiz quiz, Integer scor) {
         this.id = id;
         this.user = user;
         this.quiz = quiz;
         this.scor = scor;
-        this.raspunsuriGresite = raspunsuriGresite;
     }
 
     public Quiz getQuiz() {
@@ -52,14 +50,6 @@ public class QuizResult {
 
     public void setScor(Integer scor) {
         this.scor = scor;
-    }
-
-    public Integer getRaspunsuriGresite() {
-        return raspunsuriGresite;
-    }
-
-    public void setRaspunsuriGresite(Integer raspunsuriGresite) {
-        this.raspunsuriGresite = raspunsuriGresite;
     }
 
     public User getUser() {

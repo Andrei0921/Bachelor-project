@@ -1,12 +1,6 @@
 <div class="page">
-  <div class="page-head">
-    <div>
-      <h2>Admin - Lecții</h2>
-      <p class="muted">Creează lecții.</p>
-    </div>
-  </div>
 
-  <p-card styleClass="card">
+  <p-card class="card">
     <ng-template pTemplate="title">
       {{ editingId ? 'Editează lecția' : 'Creează lecție' }}
     </ng-template>
@@ -39,7 +33,7 @@
         <div class="field span-2">
           <label>Imagine (opțional)</label>
 
-          <p-fileUpload
+          <p-fileupload
             mode="basic"
             chooseLabel="Alege imagine"
             accept="image/*"
@@ -47,7 +41,7 @@
             [maxFileSize]="5000000"
             [customUpload]="true"
             (onSelect)="onImageSelected($event)"
-          ></p-fileUpload>
+          ></p-fileupload>
 
           <div class="thumbs" *ngIf="preview">
             <img [src]="preview" class="thumb" />
@@ -56,7 +50,7 @@
         </div>
       </div>
 
-      <p-toolbar styleClass="toolbar">
+      <p-toolbar class="toolbar">
         <ng-template pTemplate="left">
           <p-button type="button" label="Nou" icon="pi pi-plus" class="p-button-text" (click)="startCreate()"></p-button>
         </ng-template>
@@ -72,11 +66,11 @@
     </form>
   </p-card>
 
-  <p-card *ngIf="isLoading" styleClass="card">
+  <p-card *ngIf="isLoading" class="card">
     <div class="loading">Se încarcă…</div>
   </p-card>
 
-  <p-card styleClass="card">
+  <p-card class="card">
     <ng-template pTemplate="title">Lecții existente</ng-template>
 
     <p-table [value]="lessons" [paginator]="true" [rows]="8" responsiveLayout="scroll">

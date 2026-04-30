@@ -41,12 +41,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors(corsConfig -> corsConfig.configure(http)) // uses corsConfigurationSource bean below
+        http.cors(corsConfig -> corsConfig.configure(http))
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(e -> e.authenticationEntryPoint(authEntryPoint))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                "/api/auth/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**","/uploads/**")
+                                "/api/auth/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/uploads/**", "/api/brushing/**")
                         .permitAll()
                         .anyRequest()
                         .authenticated())

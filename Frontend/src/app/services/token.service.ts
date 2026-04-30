@@ -119,4 +119,22 @@ export class TokenService {
       return null;
     }
   }
+
+  getDisplayNameFromToken(): string {
+    const token = this.getToken();
+    if (!token) return '';
+
+    try {
+      const payload = this.parseTokenPayload(token);
+      const email = payload?.sub ?? payload?.email ?? '';
+
+      if (email.includes('@')) {
+        return email.split('@')[0];
+      }
+
+      return email;
+    } catch {
+      return '';
+    }
+  }
 }

@@ -12,7 +12,6 @@ public class QuizResultMapper {
         entity.setUser(user);
         entity.setQuiz(quiz);
         entity.setScor(dto.getScor());
-        entity.setRaspunsuriGresite(dto.getRaspunsuriGresite());
         return entity;
     }
 
@@ -22,7 +21,6 @@ public class QuizResultMapper {
         dto.setUserId(entity.getUser().getId());
         dto.setQuizId(entity.getQuiz().getId());
         dto.setScor(entity.getScor());
-        dto.setRaspunsuriGresite(entity.getRaspunsuriGresite());
         return dto;
     }
 }
