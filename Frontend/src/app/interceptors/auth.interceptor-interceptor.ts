@@ -6,18 +6,15 @@ export const AuthInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
   const tokenService = inject(TokenService);
   const token = tokenService.getToken();
 
-  // Skip adding authorization header for auth endpoints and if no token
-  if (!token || isAuthEndpoint(req.url)) {
+    if (!token || isAuthEndpoint(req.url)) {
     return next(req);
   }
 
-  // Check if token is expired
   if (tokenService.isTokenExpired()) {
     tokenService.clear();
     return next(req);
   }
 
-  // Clone request with authorization header
   const authenticatedReq = req.clone({
     setHeaders: {
       Authorization: `Bearer ${token}`

@@ -47,22 +47,55 @@ rf.fit(X_train_scaled, y_train)
 pred_lr = log_reg.predict(X_test_scaled)
 pred_rf = rf.predict(X_test_scaled)
 
-acc_lr = accuracy_score(y_test, pred_lr)
-acc_rf = accuracy_score(y_test, pred_rf)
+def evaluate_model(name, y_true, y_pred):
+    return {
+        "name": name,
+        "accuracy": accuracy_score(y_true, y_pred),
+        "precision": precision_score(y_true, y_pred, average="weighted", zero_division=0),
+        "recall": recall_score(y_true, y_pred, average="weighted", zero_division=0),
+        "f1": f1_score(y_true, y_pred, average="weighted", zero_division=0),
+        "confusion_matrix": confusion_matrix(y_true, y_pred)
+    }
 
-precision = precision_score(y_test, pred_rf, average="weighted")
-recall = recall_score(y_test, pred_rf, average="weighted")
-f1 = f1_score(y_test, pred_rf, average="weighted")
+metrics_lr = evaluate_model("Logistic Regression", y_test, pred_lr)
+metrics_rf = evaluate_model("Random Forest", y_test, pred_rf)
 
-print("Logistic Regression accuracy:", acc_lr)
-print("Random Forest accuracy:", acc_rf)
-print("Precision:", precision)
-print("Recall:", recall)
-print("F1-score:", f1)
-print("Confusion matrix (RF):")
-print(confusion_matrix(y_test, pred_rf))
+print("Logistic Regression metrics:")
+print("Accuracy:", metrics_lr["accuracy"])
+print("Precision:", metrics_lr["precision"])
+print("Recall:", metrics_lr["recall"])
+print("F1-score:", metrics_lr["f1"])
+print("Confusion matrix:")
+print(metrics_lr["confusion_matrix"])
 
-# 8) Alegere + salvare
-best_model = rf if acc_rf >= acc_lr else log_reg
+print("\nRandom Forest metrics:")
+print("Accuracy:", metrics_rf["accuracy"])
+print("Precision:", metrics_rf["precision"])
+print("Recall:", metrics_rf["recall"])
+print("F1-score:", metrics_rf["f1"])
+print("Confusion matrix:")
+print(metrics_rf["confusion_matrix"])
+
+if (
+        metrics_rf["f1"] > metrics_lr["f1"]
+        or (
+        metrics_rf["f1"] == metrics_lr["f1"]
+        and metrics_rf["accuracy"] >= metrics_lr["accuracy"]
+)
+):
+    best_model = rf
+    best_metrics = metrics_rf
+else:
+    best_model = log_reg
+    best_metrics = metrics_lr
+
+print("\nBest model:", best_metrics["name"])
+print("Best model accuracy:", best_metrics["accuracy"])
+print("Best model precision:", best_metrics["precision"])
+print("Best model recall:", best_metrics["recall"])
+print("Best model F1-score:", best_metrics["f1"])
+print("Best model confusion matrix:")
+print(best_metrics["confusion_matrix"])
+
 joblib.dump(best_model, "model.pkl")
 joblib.dump(scaler, "scaler.pkl")
