@@ -11,12 +11,14 @@ import {TokenService} from '../../services/token.service';
 import {catchError, map, switchMap} from 'rxjs/operators';
 import {forkJoin, of} from 'rxjs';
 import {FormsModule} from '@angular/forms';
+import {ButtonModule} from 'primeng/button';
 
 @Component({
   selector: 'app-quiz-page',
   imports: [
     FormsModule,
     CommonModule,
+    ButtonModule,
   ],
   templateUrl: './quiz-page.html',
   styleUrl: './quiz-page.css',

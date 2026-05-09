@@ -4,7 +4,6 @@
     <div class="page-head">
       <div>
         <h2 class="title">Alege un quiz</h2>
-        <p class="subtitle">Apasă pe un quiz ca să vezi detaliile, scorul maxim și butonul de start.</p>
       </div>
     </div>
 
@@ -12,16 +11,16 @@
 
     <div class="quiz-list">
       <div class="quiz-card" *ngFor="let q of quizzes" [class.quiz-card--open]="isExpanded(q.id)">
-        <button class="quiz-summary" type="button" (click)="toggleQuizDetails(q.id)">
+        <p-button class="quiz-summary" type="button" (click)="toggleQuizDetails(q.id)">
           <div class="quiz-summary__content">
             <div class="quiz-card__header">
               <h3 class="quiz-card__title">{{ q.titlu }}</h3>
               <span class="quiz-card__category" *ngIf="q.categorie">{{ q.categorie }}</span>
             </div>
-            <p class="quiz-card__desc">{{ q.descriere || 'Fără descriere momentan.' }}</p>
+            <p class="quiz-card__desc">{{ q.descriere }}</p>
           </div>
           <span class="quiz-summary__icon">{{ isExpanded(q.id) ? '−' : '+' }}</span>
-        </button>
+        </p-button>
 
         <div class="quiz-details" *ngIf="isExpanded(q.id) && q.id as qid">
           <div class="quiz-stats">
@@ -42,7 +41,7 @@
           </div>
 
           <div class="details-actions">
-            <button class="btn btn-primary" type="button" (click)="startQuiz(q)">Start quiz</button>
+            <p-button class="btn btn-primary" type="button" (click)="startQuiz(q)">Start quiz</p-button>
           </div>
         </div>
       </div>
@@ -56,13 +55,13 @@
         <div class="subtitle" *ngIf="activeQuiz.descriere">{{ activeQuiz.descriere }}</div>
       </div>
 
-      <button class="btn btn-secondary" type="button" (click)="reset()">Înapoi la quizuri</button>
+      <p-button class="btn btn-secondary" type="button" (click)="reset()">Înapoi la quizuri</p-button>
     </div>
 
     <div *ngIf="!result" class="runner">
       <div class="runner-layout">
         <aside class="question-nav" *ngIf="questions.length">
-          <button
+          <p-button
             type="button"
             class="question-nav__item"
             *ngFor="let q of questions; let i = index"
@@ -71,7 +70,7 @@
             (click)="goToQuestion(i)"
           >
             {{ i + 1 }}
-          </button>
+          </p-button>
         </aside>
 
         <section class="question-card" *ngIf="currentQuestion as question; else noQuestionsTpl">
@@ -95,16 +94,16 @@
           </ng-template>
 
           <div class="actions">
-            <button
+            <p-button
               class="btn btn-secondary"
               type="button"
               (click)="prev()"
               [disabled]="currentIndex === 0"
             >
               Înapoi
-            </button>
+            </p-button>
 
-            <button
+            <p-button
               class="btn btn-primary"
               type="button"
               (click)="next()"
@@ -112,9 +111,9 @@
               [disabled]="!hasSelectedCurrentAnswer"
             >
               Următoarea întrebare
-            </button>
+            </p-button>
 
-            <button
+            <p-button
               class="btn btn-primary"
               type="button"
               (click)="finish()"
@@ -122,7 +121,7 @@
               [disabled]="!hasSelectedCurrentAnswer"
             >
               Vezi scorul final
-            </button>
+            </p-button>
           </div>
         </section>
       </div>
@@ -164,7 +163,7 @@
       </div>
 
       <div class="actions">
-        <button class="btn btn-primary" type="button" (click)="reset()">Înapoi la pagina de quizuri</button>
+        <p-button class="btn btn-primary" type="button" (click)="reset()">Înapoi la pagina de quizuri</p-button>
       </div>
     </div>
   </ng-container>
