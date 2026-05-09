@@ -40,13 +40,13 @@ export class FormService {
     const errors: Record<string, string> = {};
 
     if (!email?.trim()) {
-      errors['email'] = 'Email is required.';
+      errors['email'] = 'Email este obligatoriu.';
     } else if (!this.isValidEmail(email.trim())) {
-      errors['email'] = 'Please enter a valid email address.';
+      errors['email'] = 'Introduce-ți o adresă valida.';
     }
 
     if (!password) {
-      errors['password'] = 'Password is required.';
+      errors['password'] = 'Parola este obligatorie.';
     }
 
     return {
@@ -73,28 +73,28 @@ export class FormService {
 
     // Validate name
     if (!name?.trim()) {
-      errors.name = 'Name is required.';
+      errors.name = 'Numele este obligatoriu.';
     } else if (name.trim().length < 2) {
-      errors.name = 'Name must be at least 2 characters long.';
+      errors.name = 'Nnumele este prea scurt(cel putin 2 caractere).';
     }
 
     // Validate email
     if (!email?.trim()) {
-      errors.email = 'Email is required.';
+      errors.email = 'Email este ebligatoriu.';
     } else if (!this.isValidEmail(email.trim())) {
-      errors.email = 'Please enter a valid email address.';
+      errors.email = 'Introduce-ți o adresă validă.';
     }
 
     // Validate password
     if (!password) {
-      errors.password = 'Password is required.';
+      errors.password = 'Parola este obligatorie.';
     }
 
     // Validate password confirmation
     if (!confirmPassword) {
-      errors.confirmPassword = 'Please confirm your password.';
+      errors.confirmPassword = 'Confirmați parola.';
     } else if (password !== confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match.';
+      errors.confirmPassword = 'Parolele nu se potrivesc.';
     }
 
     const isValid = Object.values(errors).every(error => error === '');
