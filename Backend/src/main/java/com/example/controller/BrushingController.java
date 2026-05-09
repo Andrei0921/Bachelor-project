@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/brushing")
+@RequestMapping("/api/brushings")
 public class BrushingController {
     private final BrushingService brushingService;
 
@@ -20,12 +20,12 @@ public class BrushingController {
         this.brushingService = brushingService;
     }
 
-    @PostMapping(value = "/evaluate", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/evaluations", produces = MediaType.APPLICATION_JSON_VALUE)
     public BrushingResponseDTO evaluate(@RequestBody BrushingPostDTO request) {
         return brushingService.evaluate(request);
     }
 
-    @PostMapping("/train-rows")
+    @PostMapping("/training-data")
     public void saveTrainRows(@RequestBody List<BrushingTrainDTO> rows) {
         brushingService.appendTrainingRows(rows);
     }

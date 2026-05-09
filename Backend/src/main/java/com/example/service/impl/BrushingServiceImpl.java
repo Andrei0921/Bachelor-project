@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -27,9 +26,8 @@ public class BrushingServiceImpl implements BrushingService {
     @Value("${training.csv-path:data/training_data.csv}")
     private String CSV_PATH;
 
-
     public BrushingResponseDTO evaluate(BrushingPostDTO request) {
-        return restTemplate.postForObject(AI_URL+ "/api/evaluate", request, BrushingResponseDTO.class);
+        return restTemplate.postForObject(AI_URL + "/api/evaluations", request, BrushingResponseDTO.class);
     }
 
     @Override

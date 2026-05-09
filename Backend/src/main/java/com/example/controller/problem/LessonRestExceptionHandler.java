@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice(annotations = LessonApiErrorResponses.class)
-public class LessonQuizExceptionHandler {
+public class LessonRestExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<Object> handleValidation(ValidationException ex, HttpServletRequest req) {

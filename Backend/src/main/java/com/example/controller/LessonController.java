@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.controller.problem.LessonApiErrorResponses;
 import com.example.controller.problem.QuizApiErrorResponses;
 import com.example.dto.LessonDTO;
 import com.example.service.LessonService;
@@ -15,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/lessons")
-@QuizApiErrorResponses
+@LessonApiErrorResponses
 public class LessonController {
     private static final Logger logger = LoggerFactory.getLogger(LessonController.class);
     private final LessonService lessonService;

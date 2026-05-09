@@ -36,7 +36,7 @@ def give_advice(features, quality):
         advices.append("Mișcări prea haotice, încearcă să menții un ritm uniform.")
 
     return advices
-@app.route("/api/evaluate", methods=["POST"])
+@app.route("/api/evaluations", methods=["POST"])
 def evaluate():
     """
    Evaluează calitatea periajului și oferă recomandări.

@@ -18,12 +18,12 @@ public class QuizRestExceptionHandler {
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<Object> handleValidation(ValidationException ex, HttpServletRequest req) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Validation Failed", req, ex.getErrors());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), req, ex.getErrors());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest req) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Validation Failed", req, List.of());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), req, List.of(ex.getMessage()));
     }
 
     @ExceptionHandler(NotFoundException.class)
