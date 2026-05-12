@@ -1,0 +1,107 @@
+<section class="profile-page">
+  <div class="page-head">
+    <div>
+      <p class="eyebrow">CONTUL MEU</p>
+      <h1>Profil</h1>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">Se incarca profilul...</div>
+
+  <div class="profile-grid" *ngIf="!isLoading">
+    <p-card class="profile-card">
+      <ng-template pTemplate="title">Date cont</ng-template>
+
+      <div class="account-summary" *ngIf="user">
+        <div class="avatar">
+          {{ (user.name || user.email || 'U').charAt(0).toUpperCase() }}
+        </div>
+
+        <div>
+          <h2>{{ user.name }}</h2>
+          <p>{{ user.email }}</p>
+          <span class="role-pill">{{ user.role }}</span>
+        </div>
+      </div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="form">
+        <div class="field">
+          <label for="name">Nume utilizator</label>
+          <input id="name" pInputText formControlName="name" placeholder="Numele tau" />
+          <small class="err" *ngIf="profileForm.get('name')?.touched && profileForm.get('name')?.invalid">
+            Numele este obligatoriu si trebuie sa aiba minim 2 caractere.
+          </small>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input pInputText [value]="user?.email ?? ''" disabled />
+        </div>
+
+        <div class="actions">
+          <p-button
+            type="submit"
+            label="Salveaza profilul"
+            icon="pi pi-save"
+            [disabled]="profileForm.invalid || isSavingProfile"
+          ></p-button>
+        </div>
+      </form>
+    </p-card>
+
+    <p-card class="profile-card">
+      <ng-template pTemplate="title">Schimba parola</ng-template>
+
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="form">
+        <div class="field">
+          <label for="currentPassword">Parola curenta</label>
+          <input id="currentPassword" pInputText type="password" formControlName="currentPassword" />
+          <small class="err" *ngIf="passwordForm.get('currentPassword')?.touched && passwordForm.get('currentPassword')?.invalid">
+            Parola curenta este obligatorie.
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="password">Parola noua</label>
+          <input id="password" pInputText type="password" formControlName="password" />
+          <small class="err" *ngIf="passwordForm.get('password')?.touched && passwordForm.get('password')?.invalid">
+            Parola noua trebuie sa aiba minim 6 caractere.
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="confirmPassword">Confirma parola</label>
+          <input id="confirmPassword" pInputText type="password" formControlName="confirmPassword" />
+        </div>
+
+        <div class="actions">
+          <p-button
+            type="submit"
+            label="Schimba parola"
+            icon="pi pi-lock"
+            [disabled]="passwordForm.invalid || isSavingPassword"
+          ></p-button>
+        </div>
+      </form>
+    </p-card>
+
+    <p-card class="profile-card danger-card">
+      <ng-template pTemplate="title">Stergere cont</ng-template>
+
+      <p class="muted">
+        Stergerea contului elimina profilul si rezultatele de quiz asociate.
+      </p>
+
+      <div class="actions">
+        <p-button
+          type="button"
+          label="Sterge contul"
+          icon="pi pi-trash"
+          severity="danger"
+          [disabled]="isDeleting"
+          (click)="deleteAccount()"
+        ></p-button>
+      </div>
+    </p-card>
+  </div>
+</section>
