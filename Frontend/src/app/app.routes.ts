@@ -10,6 +10,7 @@ import {QuizPage} from './components/quiz-page/quiz-page';
 import {adminGuard} from './guards/admin.guard';
 import {AdminQuiz} from './components/admin-quiz/admin-quiz';
 import {AdminLesson} from './components/admin-lesson/admin-lesson';
+import {ProfileComponent} from './components/profile/profile';
 
 export const routes: Routes = [
   {path: '', redirectTo: '/login', pathMatch: 'full'},
@@ -62,6 +63,10 @@ export const routes: Routes = [
       {
         path: 'quiz',
         component: QuizPage
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent
       }
 
 

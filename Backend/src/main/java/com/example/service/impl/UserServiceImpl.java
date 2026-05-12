@@ -4,6 +4,7 @@ import com.example.domain.User;
 import com.example.domain.validator.UserValidator;
 import com.example.exception.NotFoundException;
 import com.example.exception.ValidationException;
+import com.example.repository.QuizResultRepository;
 import com.example.repository.UserRepository;
 import com.example.service.UserService;
 import java.util.Collection;
@@ -18,10 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final QuizResultRepository quizResultRepository;
     private final UserValidator userValidator;
 
-    public UserServiceImpl(UserRepository userRepository, UserValidator userValidator) {
+    public UserServiceImpl(
+            UserRepository userRepository, QuizResultRepository quizResultRepository, UserValidator userValidator) {
         this.userRepository = userRepository;
+        this.quizResultRepository = quizResultRepository;
         this.userValidator = userValidator;
     }
 
@@ -79,6 +83,7 @@ public class UserServiceImpl implements UserService {
 
         if (userRepository.findById(id).isEmpty()) throw new NotFoundException("User with id " + id + " not found");
 
+        quizResultRepository.deleteByUserId(id);
         userRepository.deleteById(id);
     }
 

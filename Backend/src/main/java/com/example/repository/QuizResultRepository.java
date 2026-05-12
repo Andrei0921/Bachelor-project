@@ -10,4 +10,6 @@ public interface QuizResultRepository extends JpaRepository<QuizResult, Long> {
     Optional<QuizResult> findTopByUserIdAndQuizIdOrderByScorDesc(Long userId, Long quizId);
 
     Optional<QuizResult> findFirstByUserId(Long userId);
+
+    void deleteByUserId(Long userId);
 }

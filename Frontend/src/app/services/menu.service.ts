@@ -11,22 +11,26 @@ export class MenuService {
 
   navigate(label: string) {
     switch (label) {
-      case 'Home':
+      case 'Acasa':
         this.router.navigate(['/home']);
         break;
       case 'User':
         this.router.navigate(['/user']);
         break;
-      case 'Lessons':
+      case 'Lectii':
+      case 'Lecții':
         this.router.navigate(['/lesson']);
         break;
-      case 'Quizzes':
+      case 'Quiz-uri':
         this.router.navigate(['/quiz']);
         break;
-      case '3d Model':
+      case 'Model 3D':
         this.router.navigate(['/model']);
         break;
-      case 'Log out':
+      case 'Profil':
+        this.router.navigate(['/profile']);
+        break;
+      case 'Log Out':
         this.tokenService.clear();
         this.router.navigate(['/login']);
         console.log('Logging out...');
