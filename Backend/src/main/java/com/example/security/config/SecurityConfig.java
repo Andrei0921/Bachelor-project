@@ -55,6 +55,7 @@ public class SecurityConfig {
                                 )
                         .permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/brushings/evaluations").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/brushings/training-data").authenticated()
                         .anyRequest()
                         .authenticated())
                 .authenticationProvider(authenticationProvider())

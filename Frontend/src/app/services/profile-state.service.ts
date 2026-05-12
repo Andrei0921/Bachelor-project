@@ -1,7 +1,6 @@
-import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, tap} from 'rxjs';
-import {UserDTO} from '../api';
+import {BehaviorSubject, Observable, tap, throwError} from 'rxjs';
+import {UserControllerService, UserDTO} from '../api';
 import {TokenService} from './token.service';
 
 @Injectable({
@@ -12,12 +11,17 @@ export class ProfileStateService {
   readonly currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(
-    private readonly http: HttpClient,
+    private readonly userApi: UserControllerService,
     private readonly tokenService: TokenService,
   ) {}
 
   loadCurrentUser(): Observable<UserDTO> {
-    return this.http.get<UserDTO>('/api/users/me').pipe(
+    const email = this.tokenService.getEmailFromToken();
+    if (!email) {
+      return throwError(() => new Error('Missing user email from token'));
+    }
+
+    return this.userApi.getUserByEmail(email).pipe(
       tap((user) => this.currentUserSubject.next(user)),
     );
   }

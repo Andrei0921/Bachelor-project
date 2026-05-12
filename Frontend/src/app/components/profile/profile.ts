@@ -1,12 +1,11 @@
 import {CommonModule} from '@angular/common';
-import {HttpClient} from '@angular/common/http';
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {Button} from 'primeng/button';
 import {Card} from 'primeng/card';
 import {InputTextModule} from 'primeng/inputtext';
-import {UserDTO} from '../../api';
+import {UserControllerService, UserDTO} from '../../api';
 import {ToastService} from '../../services/toast.service';
 import {TokenService} from '../../services/token.service';
 import {ProfileStateService} from '../../services/profile-state.service';
@@ -35,7 +34,7 @@ export class ProfileComponent implements OnInit {
   passwordForm: any;
 
   constructor(
-    private readonly http: HttpClient,
+    private readonly userApi: UserControllerService,
     private readonly formBuilder: FormBuilder,
     private readonly toastService: ToastService,
     private readonly tokenService: TokenService,
@@ -80,7 +79,14 @@ export class ProfileComponent implements OnInit {
 
     this.isSavingProfile = true;
 
-    this.http.put<UserDTO>('/api/users/me', {
+    if (!this.user?.id) {
+      this.toastService.error('Nu am putut identifica utilizatorul.');
+      this.isSavingProfile = false;
+      return;
+    }
+
+    this.userApi.updateUser(this.user.id, {
+      ...this.user,
       name: this.profileForm.value.name,
     }).subscribe({
       next: (user) => {
@@ -110,7 +116,14 @@ export class ProfileComponent implements OnInit {
 
     this.isSavingPassword = true;
 
-    this.http.put<UserDTO>('/api/users/me/password', {
+    if (!this.user?.id) {
+      this.toastService.error('Nu am putut identifica utilizatorul.');
+      this.isSavingPassword = false;
+      return;
+    }
+
+    this.userApi.updateUser(this.user.id, {
+      ...this.user,
       currentPassword: raw.currentPassword,
       password: raw.password,
     }).subscribe({
@@ -132,7 +145,13 @@ export class ProfileComponent implements OnInit {
 
     this.isDeleting = true;
 
-    this.http.delete<void>('/api/users/me').subscribe({
+    if (!this.user?.id) {
+      this.toastService.error('Nu am putut identifica utilizatorul.');
+      this.isDeleting = false;
+      return;
+    }
+
+    this.userApi._delete(this.user.id).subscribe({
       next: () => {
         this.tokenService.clear();
         this.profileState.clear();

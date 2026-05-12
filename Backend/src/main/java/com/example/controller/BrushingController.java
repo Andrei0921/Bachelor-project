@@ -26,6 +26,7 @@ public class BrushingController {
         return brushingService.evaluate(request);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/training-data")
     public void saveTrainRows(@RequestBody List<BrushingTrainDTO> rows) {
         brushingService.appendTrainingRows(rows);

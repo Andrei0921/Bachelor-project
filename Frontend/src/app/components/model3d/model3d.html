@@ -46,9 +46,11 @@
     <p-card *ngIf="selectedToothInfo && !brushingActive" class="info-card wide-card">
       <h2>{{ selectedToothInfo.name }}</h2>
       <p><strong>Funcție:</strong> {{ selectedToothInfo.functie }}</p>
-      <p><strong>Poziție:</strong> {{ selectedToothInfo.pozitie }}</p>
-      <p><strong>Număr rădăcini:</strong> {{ selectedToothInfo.nr_radacini }}</p>
-      <p><strong>Eruptie:</strong> {{ selectedToothInfo.eruptie }}</p>
+      <ng-container *ngIf="selectedIsTooth">
+        <p><strong>Poziție:</strong> {{ selectedToothInfo.pozitie }}</p>
+        <p><strong>Număr rădăcini:</strong> {{ selectedToothInfo.nr_radacini }}</p>
+        <p><strong>Eruptie:</strong> {{ selectedToothInfo.eruptie }}</p>
+      </ng-container>
     </p-card>
 
     <p-card *ngIf="brushingActive" class="info-card wide-card">
@@ -57,7 +59,7 @@
       <p><em>Rezultatul final se calculează la Stop.</em></p>
     </p-card>
 
-    <p-card *ngIf="selectedToothInfo && !brushingActive && sessionDone" class="info-card wide-card result-card">
+    <p-card *ngIf="selectedToothInfo && selectedIsTooth && !brushingActive && sessionDone" class="info-card wide-card result-card">
       <h2>Rezultate periaj {{ selectedToothInfo.name }}</h2>
 
       <p>

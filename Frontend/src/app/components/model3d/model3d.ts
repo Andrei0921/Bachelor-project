@@ -66,6 +66,7 @@ export class ModelComponent implements AfterViewInit {
   public shiftDown = false;
   public cursorX = 0;
   public cursorY = 0;
+  public selectedIsTooth = false;
 
   constructor(private readonly brushingService: BrushingControllerService) {}
 
@@ -251,12 +252,14 @@ export class ModelComponent implements AfterViewInit {
       if (!this.brushingActive) {
         this.selectedToothInfo = Model_info[mesh.name] || null;
         this.selectedTooth = mesh.name || "Dintele fără nume";
+        this.selectedIsTooth = this.isToothMesh(mesh.name);
         return;
       }
 
       this.activeTooth = mesh;
       this.selectedTooth = mesh.name || "Dintele fără nume";
       this.selectedToothInfo = Model_info[mesh.name] || null;
+      this.selectedIsTooth = this.isToothMesh(mesh.name);
     }
   }
   animate = () => {
@@ -328,6 +331,7 @@ export class ModelComponent implements AfterViewInit {
     this.activeTooth = tooth;
     this.selectedTooth = toothName;
     this.selectedToothInfo = Model_info[toothName] || null;
+    this.selectedIsTooth = true;
 
     // inițializează stats
     this.ensureToothStats(toothName);
@@ -499,13 +503,18 @@ export class ModelComponent implements AfterViewInit {
 
   }
   get selectedToothResult(): ToothQuality | null {
-    if (!this.selectedTooth) return null;
+    if (!this.selectedTooth || !this.selectedIsTooth) return null;
     return this.toothResult.get(this.selectedTooth) ?? null;
   }
 
   get selectedToothAdvice(): string[] {
-    if (!this.selectedTooth) return [];
+    if (!this.selectedTooth || !this.selectedIsTooth) return [];
     return this.toothAdvice.get(this.selectedTooth) ?? [];
+  }
+
+  private isToothMesh(meshName?: string | null): boolean {
+    if (!meshName) return false;
+    return this.teethMeshes.some((mesh) => mesh.name === meshName);
   }
 
   private colorToothByName(toothName: string, result: ToothQuality) {
