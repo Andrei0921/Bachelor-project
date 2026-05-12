@@ -1,8 +1,12 @@
 package com.example.service.impl;
 
 import com.example.domain.*;
+import com.example.domain.validator.AnswerValidator;
+import com.example.domain.validator.QuestionValidator;
+import com.example.domain.validator.QuizValidator;
 import com.example.dto.*;
 import com.example.exception.NotFoundException;
+import com.example.exception.ValidationException;
 import com.example.mapper.AnswerMapper;
 import com.example.mapper.QuestionMapper;
 import com.example.mapper.QuizMapper;
@@ -25,18 +29,27 @@ public class QuizServiceImpl implements QuizService, AnswerService, QuizResultSe
     private final QuizQuestionRepository quizQuestionRepository;
     private final QuizResultRepository quizResultRepository;
     private final UserRepository userRepository;
+    private final QuizValidator quizValidator;
+    private final QuestionValidator questionValidator;
+    private final AnswerValidator answerValidator;
 
     public QuizServiceImpl(
             QuizRepository quizRepository,
             QuizAnswerRepository quizAnswerRepository,
             QuizQuestionRepository quizQuestionRepository,
             QuizResultRepository quizResultRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            QuizValidator quizValidator,
+            QuestionValidator questionValidator,
+            AnswerValidator answerValidator) {
         this.quizRepository = quizRepository;
         this.quizAnswerRepository = quizAnswerRepository;
         this.quizQuestionRepository = quizQuestionRepository;
         this.quizResultRepository = quizResultRepository;
         this.userRepository = userRepository;
+        this.quizValidator = quizValidator;
+        this.questionValidator = questionValidator;
+        this.answerValidator = answerValidator;
     }
 
     @Override
@@ -46,6 +59,7 @@ public class QuizServiceImpl implements QuizService, AnswerService, QuizResultSe
                 .findById(questionId)
                 .orElseThrow(() -> new NotFoundException("Question not found"));
         QuizAnswer answer = AnswerMapper.toEntity(quizAnswerDto, question);
+        answerValidator.validate(answer);
         QuizAnswer saved = quizAnswerRepository.save(answer);
         return AnswerMapper.toDTO(saved);
     }
@@ -57,6 +71,7 @@ public class QuizServiceImpl implements QuizService, AnswerService, QuizResultSe
                 quizAnswerRepository.findById(id).orElseThrow(() -> new NotFoundException("Answer not found"));
         answer.setText(quizAnswerDto.getText());
         answer.setCorrect(quizAnswerDto.isCorrect());
+        answerValidator.validate(answer);
         QuizAnswer saved = quizAnswerRepository.save(answer);
         return AnswerMapper.toDTO(saved);
     }
@@ -73,6 +88,7 @@ public class QuizServiceImpl implements QuizService, AnswerService, QuizResultSe
     public QuestionResponseDTO addQuizQuestion(Long quizId, QuestionPostDTO quizQuestionDto) {
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new NotFoundException("Quiz not found"));
         QuizQuestion question = QuestionMapper.toEntity(quizQuestionDto, quiz);
+        questionValidator.validate(question);
         QuizQuestion saved = quizQuestionRepository.save(question);
         return QuestionMapper.toDTO(saved);
     }
@@ -83,6 +99,7 @@ public class QuizServiceImpl implements QuizService, AnswerService, QuizResultSe
         QuizQuestion question =
                 quizQuestionRepository.findById(id).orElseThrow(() -> new NotFoundException("Question not found"));
         question.setIntrebare(quizQuestionDto.getIntrebare());
+        questionValidator.validate(question);
         QuizQuestion saved = quizQuestionRepository.save(question);
         return QuestionMapper.toDTO(saved);
     }
@@ -173,6 +190,7 @@ public class QuizServiceImpl implements QuizService, AnswerService, QuizResultSe
     @Transactional
     public QuizResponseDTO addQuiz(QuizPostDTO quizDto) {
         Quiz quiz = QuizMapper.toEntity(quizDto);
+        quizValidator.validate(quiz);
         Quiz saved = quizRepository.save(quiz);
         return QuizMapper.toDTO(saved);
     }
@@ -186,6 +204,7 @@ public class QuizServiceImpl implements QuizService, AnswerService, QuizResultSe
         quiz.setTitlu(quizDto.getTitlu());
         quiz.setDescriere(quizDto.getDescriere());
         quiz.setCategorie(quizDto.getCategorie());
+        quizValidator.validate(quiz);
         Quiz saved = quizRepository.save(quiz);
         return QuizMapper.toDTO(saved);
     }
@@ -211,5 +230,21 @@ public class QuizServiceImpl implements QuizService, AnswerService, QuizResultSe
                 .findById(id)
                 .orElseThrow(() -> new NotFoundException("Quiz with id " + id + " not found"));
         return QuizMapper.toDTO(quiz);
+    }
+
+    @Override
+    public List<QuizResponseDTO> getQuizzesByCategorie(String categorie) {
+        if (categorie == null || categorie.isBlank()) {
+            throw new ValidationException("Category is required");
+        }
+
+        return quizRepository.findByCategorieIgnoreCase(categorie).stream()
+                .map(QuizMapper::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<String> getCategories() {
+        return quizRepository.findDistinctCategories();
     }
 }

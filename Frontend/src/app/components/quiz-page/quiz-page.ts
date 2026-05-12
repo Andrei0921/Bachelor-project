@@ -12,6 +12,7 @@ import {catchError, map, switchMap} from 'rxjs/operators';
 import {forkJoin, of} from 'rxjs';
 import {FormsModule} from '@angular/forms';
 import {ButtonModule} from 'primeng/button';
+import {SelectModule} from 'primeng/select';
 
 @Component({
   selector: 'app-quiz-page',
@@ -19,6 +20,7 @@ import {ButtonModule} from 'primeng/button';
     FormsModule,
     CommonModule,
     ButtonModule,
+    SelectModule
   ],
   templateUrl: './quiz-page.html',
   styleUrl: './quiz-page.css',
@@ -41,6 +43,11 @@ export class QuizPage implements OnInit {
 
   private startedAtMs = 0;
   result: QuizResultDTO | null = null;
+  selectedCategory: string = 'Toate';
+
+  categoryOptions: { label: string; value: string }[] = [
+    { label: 'Toate categoriile', value: 'Toate' }
+  ];
 
   constructor(
     private quizApi: QuizControllerService,
@@ -50,6 +57,7 @@ export class QuizPage implements OnInit {
 
   ngOnInit(): void {
     this.loadCurrentUser();
+    this.loadCategories();
     this.loadQuizzes();
   }
 
@@ -84,6 +92,20 @@ export class QuizPage implements OnInit {
 
       this.loadQuestionCounts();
       if (this.userId) this.loadUserResults();
+    });
+  }
+
+  loadCategories(): void {
+    this.quizApi.getCategories().pipe(
+      catchError(() => of([] as string[]))
+    ).subscribe((categories) => {
+      this.categoryOptions = [
+        { label: 'Toate categoriile', value: 'Toate' },
+        ...(categories ?? []).map(c => ({
+          label: c,
+          value: c
+        }))
+      ];
     });
   }
 
@@ -262,6 +284,30 @@ export class QuizPage implements OnInit {
   correctText(question: QuestionResponseDTO): string {
     const correct = (question.answers ?? []).find(a => a.isCorrect);
     return correct?.text ?? '-';
+  }
+
+  onCategoryChange(): void {
+    this.expandedQuizId = null;
+
+    if (this.selectedCategory === 'Toate') {
+      this.loadQuizzes();
+      return;
+    }
+
+    this.isLoading = true;
+
+    this.quizApi.getQuizzesByCategorie(this.selectedCategory).pipe(
+      catchError(() => of([] as QuizResponseDTO[]))
+    ).subscribe((quizzes) => {
+      this.quizzes = quizzes ?? [];
+      this.isLoading = false;
+
+      this.loadQuestionCounts();
+
+      if (this.userId) {
+        this.loadUserResults();
+      }
+    });
   }
 
   reset(): void {

@@ -4,6 +4,7 @@ import com.example.exception.NotFoundException;
 import com.example.exception.ValidationException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @ControllerAdvice(annotations = LessonApiErrorResponses.class)
 public class LessonRestExceptionHandler {
@@ -40,6 +42,13 @@ public class LessonRestExceptionHandler {
     public ResponseEntity<String> handleConstraintViolation(DataIntegrityViolationException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body("Invalid reference: " + ex.getMostSpecificCause().getMessage());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Map<String, String>> handleMaxUploadSizeExceeded(MaxUploadSizeExceededException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Imaginea este prea mare.");
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(error);
     }
 
     private ResponseEntity<Object> buildErrorResponse(

@@ -13,6 +13,11 @@
         </div>
 
         <div class="p-field">
+          <label for="categorie">Categorie</label>
+          <input id="categorie" pInputText formControlName="categorie" placeholder="Ex: Periaj" />
+        </div>
+
+        <div class="p-field">
           <label for="desc">Descriere</label>
           <input id="desc" pInputText formControlName="descriere" placeholder="opțional" />
         </div>
@@ -94,15 +99,17 @@
     <p-table [value]="quizzes" [paginator]="true" [rows]="8" responsiveLayout="scroll">
       <ng-template pTemplate="header">
         <tr>
-          <th style="width: 260px;">Titlu</th>
+          <th>Titlu</th>
+          <th>Categorie</th>
           <th>Descriere</th>
-          <th style="width: 160px;">Acțiuni</th>
+          <th>Acțiuni</th>
         </tr>
       </ng-template>
 
       <ng-template pTemplate="body" let-q>
         <tr>
           <td><div class="title-cell">{{ q.titlu }}</div></td>
+          <td><div class="category">{{ q.categorie }}</div></td>
           <td><div class="content-preview">{{ q.descriere }}</div></td>
           <td>
             <div class="row-actions">
@@ -115,7 +122,7 @@
 
       <ng-template pTemplate="emptymessage">
         <tr>
-          <td colspan="3" class="muted">Nu există quiz-uri încă.</td>
+          <td colspan="4" class="muted">Nu există quiz-uri încă.</td>
         </tr>
       </ng-template>
     </p-table>

@@ -57,6 +57,7 @@ export class AdminQuiz implements OnInit {
     this.form = this.formBuilder.group({
       titlu: ['', [Validators.required, Validators.minLength(3)]],
       descriere: [''],
+      categorie: ['', [Validators.required]],
       questions: this.formBuilder.array([]),
     });
   }
@@ -76,7 +77,7 @@ export class AdminQuiz implements OnInit {
 
   newQuiz() {
     this.editingId = null;
-    this.form.reset({ titlu: '', descriere: '' });
+    this.form.reset({ titlu: '', descriere: '' ,  categorie: ''});
     this.questions.clear();
   }
 
@@ -148,6 +149,7 @@ export class AdminQuiz implements OnInit {
         this.form.reset({
           titlu: quiz.titlu ?? '',
           descriere: quiz.descriere ?? '',
+          categorie: quiz.categorie ?? '',
         });
 
         this.questions.clear();
@@ -236,7 +238,8 @@ export class AdminQuiz implements OnInit {
     const quizDto: QuizPostDTO = {
       titlu: raw.titlu ?? '',
       descriere: raw.descriere ?? '',
-    } as QuizPostDTO;
+      categorie: raw.categorie ?? '',
+    }
 
     const saveQuiz$ = this.editingId
       ? this.quizController.updateQuiz(this.editingId, quizDto)

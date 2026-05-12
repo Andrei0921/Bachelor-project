@@ -146,4 +146,14 @@ public class QuizController {
     public ResponseEntity<QuizResultDTO> submitQuiz(@RequestBody QuizSubmitDTO dto) {
         return ResponseEntity.ok(quizResultService.submitQuiz(dto));
     }
+
+    @GetMapping(value = "/category/{categorie}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<QuizResponseDTO>> getQuizzesByCategorie(@PathVariable String categorie) {
+        return ResponseEntity.ok(quizService.getQuizzesByCategorie(categorie));
+    }
+
+    @GetMapping(value = "/categories", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<String>> getCategories() {
+        return ResponseEntity.ok(quizService.getCategories());
+    }
 }

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserValidator implements Validator<User> {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$");
-
     /**
      * Validates the given user. Collects all validation errors and throws a ValidationException with
      * all messages.
@@ -33,7 +32,7 @@ public class UserValidator implements Validator<User> {
         }
 
         if (!errors.isEmpty()) {
-            throw new ValidationException(errors);
+            throw new ValidationException(String.join(", ", errors));
         }
     }
 

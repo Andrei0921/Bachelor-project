@@ -4,6 +4,9 @@
 
 # Java backend
 /backend/target/
+/backend/uploads/
+/backend/build/
+/backend/.gradle/
 *.class
 *.jar
 

@@ -1,6 +1,7 @@
 package com.example.service.impl;
 
 import com.example.domain.Lesson;
+import com.example.domain.validator.LessonValidator;
 import com.example.dto.LessonDTO;
 import com.example.exception.NotFoundException;
 import com.example.mapper.LessonMapper;
@@ -22,20 +23,24 @@ import org.springframework.web.multipart.MultipartFile;
 public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository lessonRepository;
+    private final LessonValidator lessonValidator;
 
-    public LessonServiceImpl(LessonRepository lessonRepository) {
+    public LessonServiceImpl(LessonRepository lessonRepository, LessonValidator lessonValidator)
+    {
         this.lessonRepository = lessonRepository;
+        this.lessonValidator = lessonValidator;
     }
 
     @Override
     @Transactional
     public LessonDTO addLesson(LessonDTO lesson, MultipartFile image) {
         if (image != null && !image.isEmpty()) {
-            String imageUrl = saveLessonImage(image); // vezi mai jos
+            String imageUrl = saveLessonImage(image);
             lesson.setImagineUrls(imageUrl);
         }
 
         Lesson entity = LessonMapper.toEntity(lesson);
+        lessonValidator.validate(entity);
         Lesson saved = lessonRepository.save(entity);
         return LessonMapper.toDTO(saved);
     }
@@ -54,7 +59,7 @@ public class LessonServiceImpl implements LessonService {
 
         Lesson entity = LessonMapper.toEntity(lesson);
         entity.setId(existing.getId());
-
+        lessonValidator.validate(entity);
         Lesson saved = lessonRepository.save(entity);
         return LessonMapper.toDTO(saved);
     }

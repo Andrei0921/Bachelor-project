@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import com.example.controller.problem.LessonApiErrorResponses;
-import com.example.controller.problem.QuizApiErrorResponses;
 import com.example.dto.LessonDTO;
 import com.example.service.LessonService;
 import java.util.List;
@@ -56,8 +55,7 @@ public class LessonController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LessonDTO>> getAllLessons() {
         logger.debug("Fetching all lessons");
-        List<LessonDTO> lessonDTOS = StreamSupport.stream(
-                        lessonService.getAllLessons().spliterator(), false)
+        List<LessonDTO> lessonDTOS = lessonService.getAllLessons().stream()
                 .toList();
         return ResponseEntity.ok(lessonDTOS);
     }

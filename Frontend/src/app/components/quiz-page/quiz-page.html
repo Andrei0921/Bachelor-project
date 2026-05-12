@@ -5,44 +5,67 @@
       <div>
         <h2 class="title">Alege un quiz</h2>
       </div>
+      <div class="filter-box">
+        <label for="categoryFilter">Filtrează după categorie</label>
+
+        <p-select
+          inputId="categoryFilter"
+          [options]="categoryOptions"
+          optionLabel="label"
+          optionValue="value"
+          [(ngModel)]="selectedCategory"
+          (onChange)="onCategoryChange()"
+          placeholder="Alege categoria"
+        ></p-select>
+      </div>
     </div>
 
     <div *ngIf="quizzes.length === 0" class="empty">Nu există quiz-uri disponibile momentan.</div>
 
-    <div class="quiz-list">
-      <div class="quiz-card" *ngFor="let q of quizzes" [class.quiz-card--open]="isExpanded(q.id)">
-        <p-button class="quiz-summary" type="button" (click)="toggleQuizDetails(q.id)">
-          <div class="quiz-summary__content">
-            <div class="quiz-card__header">
-              <h3 class="quiz-card__title">{{ q.titlu }}</h3>
-              <span class="quiz-card__category" *ngIf="q.categorie">{{ q.categorie }}</span>
-            </div>
-            <p class="quiz-card__desc">{{ q.descriere }}</p>
-          </div>
-          <span class="quiz-summary__icon">{{ isExpanded(q.id) ? '−' : '+' }}</span>
-        </p-button>
-
-        <div class="quiz-details" *ngIf="isExpanded(q.id) && q.id as qid">
-          <div class="quiz-stats">
-            <div class="stat-box">
-              <span class="stat-label">Întrebări: {{ totalByQuizId[qid] ?? 0 }}</span>
-            </div>
-
-            <div class="stat-box" *ngIf="bestResultByQuizId[qid] as r; else noScoreTpl">
-              <span class="stat-label">Scor maxim: </span>
-              <strong>{{ r.scor }} / {{ totalByQuizId[qid]}}</strong>
-            </div>
-
-            <ng-template #noScoreTpl>
-              <div class="stat-box stat-box--muted">
-                <span class="stat-label">Scor maxim: Încă nu există</span>
-              </div>
-            </ng-template>
+    <div class="quiz-card" *ngFor="let q of quizzes" [class.quiz-card--open]="isExpanded(q.id)">
+      <p-button
+        type="button"
+        styleClass="quiz-summary p-button-text"
+        (onClick)="toggleQuizDetails(q.id)"
+      >
+        <div class="quiz-summary__content">
+          <div class="quiz-card__header">
+            <h3 class="quiz-card__title">{{ q.titlu }}</h3>
+            <span class="quiz-card__category" *ngIf="q.categorie">{{ q.categorie }}</span>
           </div>
 
-          <div class="details-actions">
-            <p-button class="btn btn-primary" type="button" (click)="startQuiz(q)">Start quiz</p-button>
+          <p class="quiz-card__desc">{{ q.descriere }}</p>
+        </div>
+
+        <span class="quiz-summary__icon">{{ isExpanded(q.id) ? '−' : '+' }}</span>
+      </p-button>
+
+      <div class="quiz-details" *ngIf="isExpanded(q.id) && q.id as qid">
+        <div class="quiz-stats">
+          <div class="stat-box">
+            <span class="stat-label">Întrebări: {{ totalByQuizId[qid] ?? 0 }}</span>
           </div>
+
+          <div class="stat-box" *ngIf="bestResultByQuizId[qid] as r; else noScoreTpl">
+            <span class="stat-label">Scor maxim: </span>
+            <strong>{{ r.scor }} / {{ totalByQuizId[qid] }}</strong>
+          </div>
+
+          <ng-template #noScoreTpl>
+            <div class="stat-box stat-box--muted">
+              <span class="stat-label">Scor maxim: Încă nu există</span>
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="details-actions">
+          <p-button
+            type="button"
+            label="Start quiz"
+            icon="pi pi-play"
+            styleClass="p-button-rounded"
+            (onClick)="startQuiz(q)"
+          ></p-button>
         </div>
       </div>
     </div>
