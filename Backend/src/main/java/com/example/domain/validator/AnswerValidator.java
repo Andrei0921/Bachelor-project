@@ -2,13 +2,12 @@ package com.example.domain.validator;
 
 import com.example.domain.QuizAnswer;
 import com.example.exception.ValidationException;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
-public class AnswerValidator implements Validator<QuizAnswer>{
+public class AnswerValidator implements Validator<QuizAnswer> {
     @Override
     public void validate(QuizAnswer answer) throws ValidationException {
         List<String> errors = new ArrayList<>();

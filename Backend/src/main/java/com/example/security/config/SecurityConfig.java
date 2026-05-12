@@ -47,15 +47,12 @@ public class SecurityConfig {
                 .exceptionHandling(e -> e.authenticationEntryPoint(authEntryPoint))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                "/api/auth/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/uploads/**"
-                                )
+                                "/api/auth/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/uploads/**")
                         .permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/brushings/evaluations").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/brushings/training-data").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/brushings/evaluations")
+                        .authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/brushings/training-data")
+                        .authenticated()
                         .anyRequest()
                         .authenticated())
                 .authenticationProvider(authenticationProvider())

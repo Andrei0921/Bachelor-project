@@ -4,7 +4,6 @@ import com.example.controller.problem.LessonApiErrorResponses;
 import com.example.dto.LessonDTO;
 import com.example.service.LessonService;
 import java.util.List;
-import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
@@ -55,8 +54,7 @@ public class LessonController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LessonDTO>> getAllLessons() {
         logger.debug("Fetching all lessons");
-        List<LessonDTO> lessonDTOS = lessonService.getAllLessons().stream()
-                .toList();
+        List<LessonDTO> lessonDTOS = lessonService.getAllLessons().stream().toList();
         return ResponseEntity.ok(lessonDTOS);
     }
 

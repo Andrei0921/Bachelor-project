@@ -25,8 +25,7 @@ public class LessonServiceImpl implements LessonService {
     private final LessonRepository lessonRepository;
     private final LessonValidator lessonValidator;
 
-    public LessonServiceImpl(LessonRepository lessonRepository, LessonValidator lessonValidator)
-    {
+    public LessonServiceImpl(LessonRepository lessonRepository, LessonValidator lessonValidator) {
         this.lessonRepository = lessonRepository;
         this.lessonValidator = lessonValidator;
     }

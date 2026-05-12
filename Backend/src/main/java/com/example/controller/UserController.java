@@ -233,7 +233,9 @@ public class UserController {
     }
 
     private User getAuthenticatedUser(Principal principal) {
-        if (principal == null || principal.getName() == null || principal.getName().isBlank()) {
+        if (principal == null
+                || principal.getName() == null
+                || principal.getName().isBlank()) {
             throw new IllegalArgumentException("Authenticated user is required");
         }
 

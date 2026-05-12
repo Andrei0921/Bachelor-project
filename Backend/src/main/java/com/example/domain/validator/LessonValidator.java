@@ -1,15 +1,13 @@
 package com.example.domain.validator;
 
-
 import com.example.domain.Lesson;
 import com.example.exception.ValidationException;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
-public class LessonValidator implements Validator<Lesson>{
+public class LessonValidator implements Validator<Lesson> {
     @Override
     public void validate(Lesson lesson) throws ValidationException {
         List<String> errors = new ArrayList<>();

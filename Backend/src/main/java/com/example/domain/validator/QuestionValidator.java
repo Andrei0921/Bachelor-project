@@ -1,12 +1,10 @@
 package com.example.domain.validator;
 
-
 import com.example.domain.QuizQuestion;
 import com.example.exception.ValidationException;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
 public class QuestionValidator implements Validator<QuizQuestion> {

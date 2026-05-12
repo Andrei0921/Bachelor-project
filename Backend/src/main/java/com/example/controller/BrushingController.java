@@ -20,6 +20,7 @@ public class BrushingController {
     public BrushingController(BrushingService brushingService) {
         this.brushingService = brushingService;
     }
+
     @PreAuthorize("isAuthenticated()")
     @PostMapping(value = "/evaluations", produces = MediaType.APPLICATION_JSON_VALUE)
     public BrushingResponseDTO evaluate(@RequestBody BrushingPostDTO request) {
