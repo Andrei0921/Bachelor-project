@@ -4,14 +4,21 @@
       <div class="action-card">
         <div>
           <h2>Model 3D</h2>
-          <p>Pornește periajul ghidat.</p>
+          <p>Exersează periajul</p>
         </div>
 
-        <p-button
-          label="{{ brushingActive ? 'Stop periaj' : 'Start periaj' }}"
-          (click)="toggleBrushing()"
-          class="p-button-success action-btn">
-        </p-button>
+        <div class="session-actions">
+          <div class="timer-pill" [class.active]="brushingActive">
+            <i class="pi pi-clock"></i>
+            <span>{{ formattedElapsed }}</span>
+          </div>
+
+          <p-button
+            label="{{ brushingActive ? 'Stop periaj' : 'Start periaj' }}"
+            (click)="toggleBrushing()"
+            class="p-button-success action-btn">
+          </p-button>
+        </div>
       </div>
 
       <div class="caries-card">
@@ -55,6 +62,7 @@
 
     <p-card *ngIf="brushingActive" class="info-card wide-card">
       <h2>Periaj ghidat</h2>
+      <p><strong>Timp:</strong> {{ formattedElapsed }}</p>
       <p><em>Ține apăsat Shift și mișcă mouse-ul peste dinți.</em></p>
       <p><em>Rezultatul final se calculează la Stop.</em></p>
     </p-card>
@@ -64,7 +72,7 @@
 
       <p>
         <strong>Rezultat:</strong>
-        {{ selectedToothResult }}
+        {{ resultLabel(selectedToothResult) }}
       </p>
 
       <div *ngIf="selectedToothAdvice.length > 0">
@@ -81,9 +89,37 @@
       </div>
     </p-card>
 
+    <p-card class="info-card wide-card history-card">
+      <h2>Istoric periaj</h2>
+
+      <div *ngIf="isSavingSession" class="history-muted">
+        Se salveaza sesiunea...
+      </div>
+
+      <div *ngIf="!brushingHistory.length && !isSavingSession" class="history-muted">
+        Nu exista sesiuni salvate inca.
+      </div>
+
+      <div class="history-list" *ngIf="brushingHistory.length">
+        <div class="history-item" *ngFor="let session of brushingHistory">
+          <div>
+            <strong>{{ session.startedAt | date:'dd.MM.yyyy HH:mm' }}</strong>
+            <span>{{ formatDuration(session.durationSeconds) }} - {{ session.toothResults?.length ?? 0 }} dinti</span>
+          </div>
+
+          <div
+            class="score-pill"
+            [class.good]="session.overallResult === 'good'"
+            [class.ok]="session.overallResult === 'ok'"
+            [class.poor]="session.overallResult === 'poor'">
+            {{ session.overallScore }}% - {{ resultLabel(session.overallResult) }}
+          </div>
+        </div>
+      </div>
+    </p-card>
+
     <div class="empty-state" *ngIf="!selectedToothInfo && !brushingActive && !sessionDone">
       Selectează un dinte pentru detalii.
     </div>
   </aside>
 </div>
-

@@ -81,9 +81,11 @@ export class LoginComponent {
         parsedResponse = response;
       }
       const token = (parsedResponse as any)?.token;
+      const userId = (parsedResponse as any)?.userId;
 
       if (token) {
         this.tokenService.setToken(token);
+        this.tokenService.setUserId(userId);
         const isAdmin = this.isAdminFromToken(token);
         await this.router.navigate([isAdmin ? '/admin/quiz' : '/home']);
       } else {

@@ -11,12 +11,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.security.Principal;
 import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,52 +51,6 @@ public class UserController {
         Collection<UserDTO> userDTOs = UserMapper.toDtoList(users);
         logger.info("Users retrieved: {}", userDTOs);
         return ResponseEntity.ok(userDTOs);
-    }
-
-    @GetMapping("/me")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserDTO> getCurrentUser(Principal principal) {
-        User user = getAuthenticatedUser(principal);
-        return ResponseEntity.ok(UserMapper.toDto(user));
-    }
-
-    @PutMapping("/me")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserDTO> updateCurrentUser(Principal principal, @RequestBody UserDTO userDto) {
-        User existingUser = getAuthenticatedUser(principal);
-        existingUser.setName(userDto.getName());
-
-        User updatedUser = userService.updateUser(existingUser);
-        return ResponseEntity.ok(UserMapper.toDto(updatedUser));
-    }
-
-    @PutMapping("/me/password")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserDTO> updateCurrentUserPassword(Principal principal, @RequestBody UserDTO userDto) {
-        User existingUser = getAuthenticatedUser(principal);
-
-        if (userDto.getCurrentPassword() == null
-                || userDto.getCurrentPassword().isBlank()
-                || userDto.getPassword() == null
-                || userDto.getPassword().isBlank()) {
-            throw new IllegalArgumentException("Current password and new password are required");
-        }
-
-        if (!passwordEncoder.matches(userDto.getCurrentPassword(), existingUser.getPassword())) {
-            throw new IllegalArgumentException("Current password is incorrect");
-        }
-
-        existingUser.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        User updatedUser = userService.updateUser(existingUser);
-        return ResponseEntity.ok(UserMapper.toDto(updatedUser));
-    }
-
-    @DeleteMapping("/me")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Void> deleteCurrentUser(Principal principal) {
-        User user = getAuthenticatedUser(principal);
-        userService.deleteUser(user.getId());
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Get user by ID", description = "Returns a single user by their ID")
@@ -230,15 +182,5 @@ public class UserController {
         User user = userService.getUserByEmail(email);
         logger.info("User retrieved by email: {}", user);
         return ResponseEntity.ok(UserMapper.toDto(user));
-    }
-
-    private User getAuthenticatedUser(Principal principal) {
-        if (principal == null
-                || principal.getName() == null
-                || principal.getName().isBlank()) {
-            throw new IllegalArgumentException("Authenticated user is required");
-        }
-
-        return userService.getUserByEmail(principal.getName());
     }
 }

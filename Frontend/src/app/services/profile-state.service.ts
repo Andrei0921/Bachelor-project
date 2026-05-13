@@ -16,12 +16,12 @@ export class ProfileStateService {
   ) {}
 
   loadCurrentUser(): Observable<UserDTO> {
-    const email = this.tokenService.getEmailFromToken();
-    if (!email) {
-      return throwError(() => new Error('Missing user email from token'));
+    const userId = this.tokenService.getUserId();
+    if (!userId) {
+      return throwError(() => new Error('Missing user id'));
     }
 
-    return this.userApi.getUserByEmail(email).pipe(
+    return this.userApi.getUser(userId).pipe(
       tap((user) => this.currentUserSubject.next(user)),
     );
   }

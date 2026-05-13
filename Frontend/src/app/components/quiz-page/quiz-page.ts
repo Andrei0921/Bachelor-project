@@ -110,10 +110,10 @@ export class QuizPage implements OnInit {
   }
 
   loadCurrentUser(): void {
-    const email = this.tokenService.getEmailFromToken();
-    if (!email) return;
+    const userId = this.tokenService.getUserId();
+    if (!userId) return;
 
-    this.userApi.getUserByEmail(email).pipe(
+    this.userApi.getUser(userId).pipe(
       catchError(() => of(null))
     ).subscribe((u: any) => {
       this.userId = u?.id ?? null;

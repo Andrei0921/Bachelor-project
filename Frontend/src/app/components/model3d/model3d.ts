@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, HostListener, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   Scene,
   PerspectiveCamera,
@@ -25,7 +25,15 @@ import {Button} from 'primeng/button';
 import {firstValueFrom, of} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {ToothQuality, ToothStats} from './BrushingStats';
-import {BrushingControllerService, BrushingResponseDTO, BrushingTrainDTO} from '../../api';
+import {
+  BrushingControllerService,
+  BrushingPostDTO,
+  BrushingResponseDTO,
+  BrushingSessionDTO,
+  BrushingSessionPostDTO,
+  BrushingToothResultDTO,
+} from '../../api';
+import {TokenService} from '../../services/token.service';
 
 @Component({
   selector: 'app-model3d',
@@ -40,7 +48,7 @@ import {BrushingControllerService, BrushingResponseDTO, BrushingTrainDTO} from '
   ],
   styleUrls: ['./model3d.css']
 })
-export class ModelComponent implements AfterViewInit {
+export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('container', { static: true }) container!: ElementRef;
   scene!: Scene;
   camera!: PerspectiveCamera;
@@ -67,10 +75,23 @@ export class ModelComponent implements AfterViewInit {
   public cursorX = 0;
   public cursorY = 0;
   public selectedIsTooth = false;
+  public elapsedSeconds = 0;
+  public brushingHistory: BrushingSessionDTO[] = [];
+  public isSavingSession = false;
+  private timerId: ReturnType<typeof setInterval> | null = null;
+  private sessionStartedAtMs = 0;
 
-  constructor(private readonly brushingService: BrushingControllerService) {}
+  constructor(
+    private readonly brushingService: BrushingControllerService,
+    private readonly tokenService: TokenService,
+  ) {}
+
+  ngOnInit(): void {
+    this.loadBrushingHistory();
+  }
 
   ngOnDestroy(): void {
+    this.stopTimer();
     try {
       if (this.renderer?.domElement) {
         this.renderer.domElement.removeEventListener('click', this.onMouseClick);
@@ -277,13 +298,16 @@ export class ModelComponent implements AfterViewInit {
       this.activeTooth = null;
       this.sessionDone = false;
       this.resultsArray = [];
+      this.toothAdvice.clear();
 
       this.toothStats.clear();
       this.toothResult.clear();
 
       this.resetAllToothMaterials();
+      this.startTimer();
 
     } else {
+      this.stopTimer();
 
       if (this.activeTooth) {
         this.activeTooth.scale.set(1, 1, 1);
@@ -292,8 +316,7 @@ export class ModelComponent implements AfterViewInit {
 
 
       await this.evaluateAllTeethAndColor();
-      const rows = this.buildTrainingRowsMinimal();
-      await firstValueFrom(this.brushingService.saveTrainRows(rows));
+      await this.saveBrushingSession();
     }
   }
 
@@ -469,12 +492,12 @@ export class ModelComponent implements AfterViewInit {
       // prag minim: dacă ai atins dintele prea puțin -> poor
       if (stats.movements < 3 || stats.totalTime < 0.7) {
         this.toothResult.set(toothName, 'poor');
+        this.toothAdvice.set(toothName, ['Periaza mai mult timp acest dinte.']);
         this.colorToothByName(toothName, 'poor');
         continue;
       }
 
-      const payload = {
-        toothName,
+      const payload: BrushingPostDTO = {
         totalTime: stats.totalTime,
         avgSpeed: stats.speedSum / Math.max(1, stats.movements),
         speedVariance: stats.speedVariance,
@@ -484,7 +507,9 @@ export class ModelComponent implements AfterViewInit {
       };
 
       try {
-        const res: BrushingResponseDTO = await firstValueFrom(this.brushingService.evaluate(payload));
+        const res: BrushingResponseDTO = await firstValueFrom(
+          this.brushingService.evaluate(payload)
+        );
 
         const result = (res?.result ?? 'unknown') as ToothQuality;
         const advice = res?.advice ?? [];
@@ -530,14 +555,93 @@ export class ModelComponent implements AfterViewInit {
     else mat.color.set(0x999999);
   }
 
-  private buildTrainingRowsMinimal():BrushingTrainDTO[] {
-    return Array.from(this.toothStats.values()).map(s => ({
-      totalTime: s.totalTime,
-      avgSpeed: s.speedSum / Math.max(1, s.movements),
-      speedVariance: s.speedVariance,
-      circularRatio: s.circularRatio,
-      coverage: s.coverage,
+  get formattedElapsed(): string {
+    return this.formatDuration(this.elapsedSeconds);
+  }
+
+  formatDuration(seconds?: number): string {
+    const safeSeconds = Math.max(0, Math.floor(seconds ?? 0));
+    const minutes = Math.floor(safeSeconds / 60).toString().padStart(2, '0');
+    const remainingSeconds = (safeSeconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${remainingSeconds}`;
+  }
+
+  resultLabel(result?: ToothQuality | string | null): string {
+    if (result === 'good') return 'Bun';
+    if (result === 'ok') return 'Mediu';
+    if (result === 'poor') return 'Slab';
+    return 'Necunoscut';
+  }
+
+  private startTimer(): void {
+    this.stopTimer();
+    this.elapsedSeconds = 0;
+    this.sessionStartedAtMs = Date.now();
+    this.timerId = setInterval(() => {
+      this.elapsedSeconds = Math.floor((Date.now() - this.sessionStartedAtMs) / 1000);
+    }, 1000);
+  }
+
+  private stopTimer(): void {
+    if (this.timerId) {
+      clearInterval(this.timerId);
+      this.timerId = null;
+    }
+
+    if (this.sessionStartedAtMs) {
+      this.elapsedSeconds = Math.floor((Date.now() - this.sessionStartedAtMs) / 1000);
+    }
+  }
+
+  private async saveBrushingSession(): Promise<void> {
+    const toothResults = this.buildSessionToothResults();
+    if (toothResults.length === 0) return;
+
+    const userId = this.tokenService.getUserId();
+    if (!userId) return;
+
+    this.isSavingSession = true;
+
+    try {
+      const payload: BrushingSessionPostDTO = {
+        durationSeconds: this.elapsedSeconds,
+        toothResults,
+      };
+
+      await firstValueFrom(this.brushingService.saveSession(userId, payload));
+      this.loadBrushingHistory();
+    } catch {
+      // Istoricul nu trebuie sa blocheze afisarea rezultatului periajului.
+    } finally {
+      this.isSavingSession = false;
+    }
+  }
+
+  private buildSessionToothResults(): BrushingToothResultDTO[] {
+    return Array.from(this.toothStats.entries()).map(([toothName, stats]) => ({
+      toothName,
+      totalTime: stats.totalTime,
+      avgSpeed: stats.speedSum / Math.max(1, stats.movements),
+      speedVariance: stats.speedVariance,
+      circularRatio: stats.circularRatio,
+      coverage: stats.coverage,
+      result: this.toothResult.get(toothName) ?? 'unknown',
+      advice: this.toothAdvice.get(toothName) ?? [],
     }));
+  }
+
+  private loadBrushingHistory(): void {
+    const userId = this.tokenService.getUserId();
+    if (!userId) {
+      this.brushingHistory = [];
+      return;
+    }
+
+    this.brushingService.getSessions(userId).pipe(
+      catchError(() => of([] as BrushingSessionDTO[]))
+    ).subscribe((sessions) => {
+      this.brushingHistory = (sessions ?? []).slice(0, 5);
+    });
   }
 
 }

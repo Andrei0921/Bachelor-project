@@ -14,7 +14,6 @@ export class LessonList implements OnInit {
   currentLessonIndex = 0;
   lessons: LessonDTO[] = [];
   lesson!: LessonDTO;
-  totalLessons = 0;
   private pendingIndex = 0;
 
   constructor(
@@ -37,7 +36,6 @@ export class LessonList implements OnInit {
       const data = (res ?? []) as LessonDTO[];
 
       this.lessons = [...data].sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
-      this.totalLessons = this.lessons.length;
 
       this.loadLesson(Math.min(this.pendingIndex, Math.max(0, this.lessons.length - 1)));
     });

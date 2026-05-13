@@ -6,8 +6,7 @@ import {Button} from 'primeng/button';
 import {Tooltip} from 'primeng/tooltip';
 import {filter} from 'rxjs';
 import {TokenService} from '../../services/token.service';
-import {HttpClient} from '@angular/common/http';
-import {UserDTO} from '../../api';
+import {UserControllerService} from '../../api';
 import {ProfileStateService} from '../../services/profile-state.service';
 import {Subscription} from 'rxjs';
 
@@ -47,7 +46,7 @@ export class SidebarComponent implements OnDestroy {
     private menuService: MenuService,
     private router: Router,
     private tokenService: TokenService,
-    private http: HttpClient,
+    private userApi: UserControllerService,
     private profileState: ProfileStateService,
   ) {
     this.syncModeFromRoute(this.router.url);
@@ -99,7 +98,13 @@ export class SidebarComponent implements OnDestroy {
       return;
     }
 
-    this.http.get<UserDTO>('/api/users/me').subscribe({
+    const userId = this.tokenService.getUserId();
+    if (!userId) {
+      this.currentUserName = '';
+      return;
+    }
+
+    this.userApi.getUser(userId).subscribe({
       next: (user) => {
         this.profileState.setCurrentUser(user);
       },

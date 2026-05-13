@@ -103,6 +103,6 @@ public class AuthController {
         User user = userService.getUserByEmail(request.getEmail());
         final String token = jwtUtils.generateToken(userDetails);
 
-        return ResponseEntity.ok(new AuthResponse(token));
+        return ResponseEntity.ok(new AuthResponse(token, user.getId()));
     }
 }

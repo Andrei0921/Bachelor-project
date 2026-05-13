@@ -6,6 +6,7 @@ import {Injectable} from '@angular/core';
 export class TokenService {
   private readonly TOKEN_KEY = 'jwt';
   private readonly CURRENT_USER_KEY = 'currentUser';
+  private readonly USER_ID_KEY = 'userId';
 
   /**
    * Sets the authentication token in localStorage
@@ -20,6 +21,31 @@ export class TokenService {
       }
     } catch (error) {
       // Silent fail in production - could be enhanced with proper logging service
+    }
+  }
+
+  setUserId(userId: number | null | undefined): void {
+    try {
+      if (userId === null || userId === undefined) {
+        localStorage.removeItem(this.USER_ID_KEY);
+        return;
+      }
+
+      localStorage.setItem(this.USER_ID_KEY, String(userId));
+    } catch {
+      // Silent fail in production
+    }
+  }
+
+  getUserId(): number | null {
+    try {
+      const rawUserId = localStorage.getItem(this.USER_ID_KEY);
+      if (!rawUserId) return null;
+
+      const userId = Number(rawUserId);
+      return Number.isFinite(userId) ? userId : null;
+    } catch {
+      return null;
     }
   }
 
@@ -42,6 +68,7 @@ export class TokenService {
     try {
       localStorage.removeItem(this.TOKEN_KEY);
       localStorage.removeItem(this.CURRENT_USER_KEY);
+      localStorage.removeItem(this.USER_ID_KEY);
     } catch (error) {
       // Silent fail in production
     }
