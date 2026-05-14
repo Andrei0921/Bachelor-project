@@ -170,3 +170,14 @@
   border: none;
   box-shadow: none;
 }
+
+:host ::ng-deep .p-inputtext,
+:host ::ng-deep .p-dropdown,
+:host ::ng-deep .p-inputnumber,
+:host ::ng-deep textarea {
+  width: 100%;
+  border-radius: 14px;
+  border-color: rgba(148, 163, 184, 0.3);
+  background: #fff;
+  color: #111827;
+}

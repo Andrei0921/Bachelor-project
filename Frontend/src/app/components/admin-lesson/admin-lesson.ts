@@ -9,6 +9,7 @@ import {Button} from 'primeng/button';
 import {InputTextModule} from 'primeng/inputtext';
 import {FileUploadModule} from 'primeng/fileupload';
 import {ToastService} from '../../services/toast.service';
+import { TextareaModule } from 'primeng/textarea';
 
 @Component({
   selector: 'app-admin-lesson',
@@ -21,6 +22,7 @@ import {ToastService} from '../../services/toast.service';
     InputTextModule,
     Button,
     FileUploadModule,
+    TextareaModule
   ],
   templateUrl: './admin-lesson.html',
   styleUrl: './admin-lesson.css',

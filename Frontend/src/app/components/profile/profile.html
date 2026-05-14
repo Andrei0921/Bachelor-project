@@ -50,11 +50,11 @@
     </p-card>
 
     <p-card class="profile-card">
-      <ng-template pTemplate="title">Schimba parola</ng-template>
+      <ng-template pTemplate="title">Schimbă parola</ng-template>
 
       <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="form">
         <div class="field">
-          <label for="currentPassword">Parola curenta</label>
+          <label for="currentPassword">Parola curentă</label>
           <input id="currentPassword" pInputText type="password" formControlName="currentPassword" />
           <small class="err" *ngIf="passwordForm.get('currentPassword')?.touched && passwordForm.get('currentPassword')?.invalid">
             Parola curenta este obligatorie.
@@ -70,7 +70,7 @@
         </div>
 
         <div class="field">
-          <label for="confirmPassword">Confirma parola</label>
+          <label for="confirmPassword">Confirmă parola</label>
           <input id="confirmPassword" pInputText type="password" formControlName="confirmPassword" />
         </div>
 
@@ -89,7 +89,7 @@
       <ng-template pTemplate="title">Stergere cont</ng-template>
 
       <p class="muted">
-        Stergerea contului elimina profilul si rezultatele de quiz asociate.
+        Ștergerea contului este definitivă. Această acțiune va elimina permanent profilul dumneavoastră și toate rezultatele obținute la quiz-uri.
       </p>
 
       <div class="actions">

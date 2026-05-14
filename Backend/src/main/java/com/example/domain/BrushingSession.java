@@ -22,7 +22,7 @@ public class BrushingSession {
     private Integer overallScore;
     private String overallResult;
 
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<BrushingToothResult> toothResults = new ArrayList<>();
 
     public Long getId() {

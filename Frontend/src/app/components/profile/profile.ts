@@ -9,6 +9,7 @@ import {UserControllerService, UserDTO} from '../../api';
 import {ToastService} from '../../services/toast.service';
 import {TokenService} from '../../services/token.service';
 import {ProfileStateService} from '../../services/profile-state.service';
+import {PrimeTemplate} from 'primeng/api';
 
 @Component({
   selector: 'app-profile',
@@ -19,6 +20,7 @@ import {ProfileStateService} from '../../services/profile-state.service';
     Card,
     Button,
     InputTextModule,
+    PrimeTemplate,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.css',

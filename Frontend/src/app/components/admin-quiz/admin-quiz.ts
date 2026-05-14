@@ -17,7 +17,7 @@ import {Accordion, AccordionHeader, AccordionPanel} from 'primeng/accordion';
 import {Divider} from 'primeng/divider';
 import {Button} from 'primeng/button';
 import {Toolbar} from 'primeng/toolbar';
-import {Checkbox} from 'primeng/checkbox';
+import { AccordionModule } from 'primeng/accordion';
 import {InputTextModule} from 'primeng/inputtext';
 import {RadioButtonModule} from 'primeng/radiobutton';
 import {ToastService} from '../../services/toast.service';
@@ -38,6 +38,7 @@ import {ToastService} from '../../services/toast.service';
     RadioButtonModule,
     AccordionHeader,
     FormsModule,
+    AccordionModule
   ],
   templateUrl: './admin-quiz.html',
   styleUrl: './admin-quiz.css',

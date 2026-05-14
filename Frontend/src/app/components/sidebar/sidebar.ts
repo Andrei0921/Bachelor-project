@@ -29,7 +29,7 @@ export class SidebarComponent implements OnDestroy {
 
   userMenuItems = [
     {label: 'Acasa', icon: 'pi pi-home', route: '/home', active: false},
-    {label: 'Lectii', icon: 'pi pi-graduation-cap', route: '/lesson', active: false},
+    {label: 'Lecții', icon: 'pi pi-graduation-cap', route: '/lesson', active: false},
     {label: 'Quiz-uri', icon: 'pi pi-pen-to-square', route: '/quiz', active: false},
     {label: 'Model 3D', icon: 'pi pi-slack', route: '/model', active: false},
     {label: 'Profil', icon: 'pi pi-user', route: '/profile', active: false},
@@ -39,7 +39,7 @@ export class SidebarComponent implements OnDestroy {
   adminMenuItems = [
     {label: 'Quiz-uri', icon: 'pi pi-pen-to-square', route: '/admin/quiz',active: false},
     {label: 'Lecții', icon: 'pi pi-book', route: '/admin/lesson',active: false},
-    {label: 'Log-Out', icon: 'pi pi-sign-out', route: '',active: false}
+    {label: 'Log Out', icon: 'pi pi-sign-out', route: '',active: false}
   ];
 
   constructor(
@@ -85,7 +85,13 @@ export class SidebarComponent implements OnDestroy {
 
   onSelect(item: { label: string; route: string }) {
     this.menuSelect.emit(item.label);
-    this.menuService.navigate(item.label);
+
+    if (!item.route) {
+      this.menuService.navigate(item.label);
+      return;
+    }
+
+    this.router.navigate([item.route]);
   }
 
   private syncModeFromRoute(url: string) {

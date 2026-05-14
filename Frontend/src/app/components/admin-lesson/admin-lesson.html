@@ -52,7 +52,7 @@
 
       <p-toolbar class="toolbar">
         <ng-template pTemplate="left">
-          <p-button type="button" label="Nou" icon="pi pi-plus" class="p-button-text" (click)="startCreate()"></p-button>
+          <p-button type="button" label="Anulează" icon="pi pi-times" class="p-button-text" (click)="startCreate()"></p-button>
         </ng-template>
         <ng-template pTemplate="right">
           <p-button
@@ -73,7 +73,7 @@
   <p-card class="card">
     <ng-template pTemplate="title">Lecții existente</ng-template>
 
-    <p-table [value]="lessons" [paginator]="true" [rows]="8" responsiveLayout="scroll">
+    <p-table [value]="lessons" [paginator]="true" [rows]="5" responsiveLayout="scroll">
       <ng-template pTemplate="header">
         <tr>
           <th style="width: 220px;">Titlu</th>

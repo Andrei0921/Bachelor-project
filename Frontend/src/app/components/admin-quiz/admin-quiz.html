@@ -25,7 +25,7 @@
 
       <p-toolbar class="toolbar">
         <ng-template pTemplate="left">
-          <p-button type="button" label="Nou" icon="pi pi-plus" class="p-button-text" (onClick)="newQuiz()"></p-button>
+          <p-button type="button" label="Anulează" icon="pi pi-times" class="p-button-text" (click)="newQuiz()"></p-button>
           <p-button type="button" label="Întrebare" icon="pi pi-list-add" class="p-button-text" (onClick)="addQuestion()"></p-button>
         </ng-template>
         <ng-template pTemplate="right">
@@ -44,8 +44,9 @@
         <p-accordion *ngIf="questions.controls.length; else noQuestions" [multiple]="true">
           <p-accordion-panel
             *ngFor="let q of questions.controls; let qi = index"
-            [formGroupName]="qi"
+            [formGroupName]="qi"     [value]="qi"
           ><p-accordion-header>Întrebarea {{qi + 1}}</p-accordion-header>
+            <p-accordion-content>
             <div class="q-inner">
               <div class="q-head">
                 <strong>Text întrebare</strong>
@@ -79,11 +80,11 @@
                 <p-button type="button" class="p-button-text" icon="pi pi-plus" label="Adaugă răspuns" (click)="addAnswer(qi)"></p-button>
               </div>
             </div>
+            </p-accordion-content>
           </p-accordion-panel>
         </p-accordion>
 
         <ng-template #noQuestions>
-          <div class="muted">Adaugă o întrebare ca să începi.</div>
         </ng-template>
       </div>
     </form>
@@ -96,7 +97,7 @@
   <p-card styleClass="card">
     <ng-template pTemplate="title">Quiz-uri existente</ng-template>
 
-    <p-table [value]="quizzes" [paginator]="true" [rows]="8" responsiveLayout="scroll">
+    <p-table [value]="quizzes" [paginator]="true" [rows]="5" responsiveLayout="scroll">
       <ng-template pTemplate="header">
         <tr>
           <th>Titlu</th>

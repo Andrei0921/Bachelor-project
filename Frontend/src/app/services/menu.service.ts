@@ -17,7 +17,6 @@ export class MenuService {
       case 'User':
         this.router.navigate(['/user']);
         break;
-      case 'Lectii':
       case 'Lecții':
         this.router.navigate(['/lesson']);
         break;
