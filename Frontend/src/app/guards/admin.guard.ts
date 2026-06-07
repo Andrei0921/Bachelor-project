@@ -7,9 +7,9 @@ export const adminGuard: CanActivateFn = () => {
   const tokenService = inject(TokenService);
 
   const token = tokenService.getToken?.() ?? localStorage.getItem('token');
-  if (!token) {
-    router.navigate(['/login']);
-    return false;
+  if (!token || tokenService.isTokenExpired()) {
+    tokenService.clear();
+    return router.parseUrl('/login');
   }
 
   const payload = parseJwt(token);
@@ -21,8 +21,7 @@ export const adminGuard: CanActivateFn = () => {
   const isAdmin = roles.includes('ROLE_ADMIN') || roles.includes('ADMIN');
 
   if (!isAdmin) {
-    router.navigate(['/home']);
-    return false;
+    return router.parseUrl('/home');
   }
 
   return true;

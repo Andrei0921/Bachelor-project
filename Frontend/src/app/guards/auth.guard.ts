@@ -6,9 +6,10 @@ export const AuthGuard = () => {
   const tokenService = inject(TokenService);
   const router = inject(Router);
 
-  if (tokenService.getToken()) {
+  if (tokenService.getToken() && !tokenService.isTokenExpired()) {
     return true;
   }
 
+  tokenService.clear();
   return router.parseUrl('/login');
 };
