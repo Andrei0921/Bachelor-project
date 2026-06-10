@@ -1,4 +1,5 @@
 <div class="lesson-shell" *ngIf="lesson">
+  <div *ngIf="lessons.length === 0" class="empty">Nu există lecții disponibile momentan.</div>
   <section class="lesson-hero">
     <div class="lesson-text">
       <span class="eyebrow">Lecția {{ currentLessonIndex + 1 }}</span>
@@ -10,7 +11,6 @@
       <img [src]="lesson.imagineUrls" alt="lesson image" class="lesson-image" />
     </div>
   </section>
-
   <section class="lesson-content-card">
     <div class="lesson-content" [innerHTML]="lesson.contentText"></div>
   </section>

@@ -1,4 +1,13 @@
 <div class="page">
+  <p-confirmDialog
+    styleClass="delete-confirm-dialog"
+    [modal]="true"
+    [closable]="true"
+    [dismissableMask]="true"
+    [closeOnEscape]="true"
+    [breakpoints]="{ '640px': 'calc(100vw - 32px)' }"
+    [style]="{ width: '440px' }"
+  ></p-confirmDialog>
 
   <p-card styleClass="card">
     <ng-template pTemplate="title">

@@ -21,6 +21,8 @@ import { AccordionModule } from 'primeng/accordion';
 import {InputTextModule} from 'primeng/inputtext';
 import {RadioButtonModule} from 'primeng/radiobutton';
 import {ToastService} from '../../services/toast.service';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {ConfirmationService} from 'primeng/api';
 
 @Component({
   selector: 'app-admin-quiz',
@@ -38,8 +40,10 @@ import {ToastService} from '../../services/toast.service';
     RadioButtonModule,
     AccordionHeader,
     FormsModule,
-    AccordionModule
+    AccordionModule,
+    ConfirmDialogModule
   ],
+  providers: [ConfirmationService],
   templateUrl: './admin-quiz.html',
   styleUrl: './admin-quiz.css',
   standalone: true
@@ -53,7 +57,8 @@ export class AdminQuiz implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private quizController: QuizControllerService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private confirmationService: ConfirmationService
   ) {
     this.form = this.formBuilder.group({
       titlu: ['', [Validators.required, Validators.minLength(3)]],
@@ -186,8 +191,23 @@ export class AdminQuiz implements OnInit {
   }
 
   remove(id: number) {
-    if (!confirm('Sigur vrei să ștergi quiz-ul?')) return;
+    const quizTitle = this.quizzes.find((quiz) => quiz.id === id)?.titlu;
 
+    this.confirmationService.confirm({
+      header: 'Șterge quiz-ul',
+      message: quizTitle
+        ? `Ești sigur că vrei să ștergi quiz-ul „${quizTitle}”? Această acțiune nu poate fi anulată.`
+        : 'Ești sigur că vrei să ștergi acest quiz? Această acțiune nu poate fi anulată.',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Șterge',
+      rejectLabel: 'Anulează',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => this.deleteQuiz(id),
+    });
+  }
+
+  private deleteQuiz(id: number) {
     this.isLoading = true;
     this.quizController.deleteQuiz(id).subscribe({
       next: () =>  { this.toastService.success('Quiz-ul a fost șters.'); this.load(); },

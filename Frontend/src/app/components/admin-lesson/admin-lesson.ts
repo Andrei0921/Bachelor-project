@@ -10,6 +10,8 @@ import {InputTextModule} from 'primeng/inputtext';
 import {FileUploadModule} from 'primeng/fileupload';
 import {ToastService} from '../../services/toast.service';
 import { TextareaModule } from 'primeng/textarea';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {ConfirmationService} from 'primeng/api';
 
 @Component({
   selector: 'app-admin-lesson',
@@ -22,8 +24,10 @@ import { TextareaModule } from 'primeng/textarea';
     InputTextModule,
     Button,
     FileUploadModule,
-    TextareaModule
+    TextareaModule,
+    ConfirmDialogModule
   ],
+  providers: [ConfirmationService],
   templateUrl: './admin-lesson.html',
   styleUrl: './admin-lesson.css',
   standalone: true
@@ -40,7 +44,8 @@ export class AdminLesson implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private lessonController: LessonControllerService,
-              private toastService: ToastService
+              private toastService: ToastService,
+              private confirmationService: ConfirmationService
               ) {
     this.form = this.formBuilder.group({
     titlu: ['', [Validators.required, Validators.minLength(3)]],
@@ -125,8 +130,23 @@ export class AdminLesson implements OnInit {
   }
 
   remove(id: number) {
-    if (!confirm('Sigur vrei să ștergi lecția?')) return;
+    const lessonTitle = this.lessons.find((lesson) => lesson.id === id)?.titlu;
 
+    this.confirmationService.confirm({
+      header: 'Șterge lecția',
+      message: lessonTitle
+        ? `Ești sigur că vrei să ștergi lecția „${lessonTitle}”? Această acțiune nu poate fi anulată.`
+        : 'Ești sigur că vrei să ștergi această lecție? Această acțiune nu poate fi anulată.',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Șterge',
+      rejectLabel: 'Anulează',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => this.deleteLesson(id),
+    });
+  }
+
+  private deleteLesson(id: number) {
     this.isLoading = true;
     this.lessonController.deleteLesson(id).subscribe({
       next: () => { this.toastService.success('Lecția a fost ștearsă.'); this.load(); },
