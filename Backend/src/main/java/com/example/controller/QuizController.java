@@ -6,6 +6,8 @@ import com.example.service.AnswerService;
 import com.example.service.QuestionService;
 import com.example.service.QuizResultService;
 import com.example.service.QuizService;
+import com.example.websocket.ContentEvent;
+import com.example.websocket.ContentWebSocketHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import org.slf4j.Logger;
@@ -24,16 +26,19 @@ public class QuizController {
     private final AnswerService answerService;
     private final QuestionService questionService;
     private final QuizResultService quizResultService;
+    private final ContentWebSocketHandler contentWebSocketHandler;
 
     public QuizController(
             QuizService quizService,
             AnswerService answerService,
             QuestionService questionService,
-            QuizResultService quizResultService) {
+            QuizResultService quizResultService,
+            ContentWebSocketHandler contentWebSocketHandler) {
         this.quizService = quizService;
         this.answerService = answerService;
         this.questionService = questionService;
         this.quizResultService = quizResultService;
+        this.contentWebSocketHandler = contentWebSocketHandler;
     }
 
     @Operation(summary = "Create a new Quiz")
@@ -41,7 +46,9 @@ public class QuizController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<QuizResponseDTO> addQuiz(@RequestBody QuizPostDTO dto) {
         logger.info("Creating quiz: {}", dto);
-        return ResponseEntity.ok(quizService.addQuiz(dto));
+        QuizResponseDTO saved = quizService.addQuiz(dto);
+        contentWebSocketHandler.broadcast(new ContentEvent("QUIZ", "CREATED", saved.getId()));
+        return ResponseEntity.ok(saved);
     }
 
     @Operation(summary = "Update an existing Quiz")
@@ -49,7 +56,9 @@ public class QuizController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<QuizResponseDTO> updateQuiz(@PathVariable Long id, @RequestBody QuizPostDTO dto) {
         logger.info("Updating quiz with id {}", id);
-        return ResponseEntity.ok(quizService.updateQuiz(id, dto));
+        QuizResponseDTO saved = quizService.updateQuiz(id, dto);
+        contentWebSocketHandler.broadcast(new ContentEvent("QUIZ", "UPDATED", id));
+        return ResponseEntity.ok(saved);
     }
 
     @Operation(summary = "Delete a Quiz")
@@ -58,6 +67,7 @@ public class QuizController {
     public ResponseEntity<Void> deleteQuiz(@PathVariable Long id) {
         logger.info("Deleting Lesson with id {}", id);
         quizService.deleteQuiz(id);
+        contentWebSocketHandler.broadcast(new ContentEvent("QUIZ", "DELETED", id));
         return ResponseEntity.noContent().build();
     }
 
@@ -80,14 +90,18 @@ public class QuizController {
     public ResponseEntity<QuestionResponseDTO> addQuestion(
             @PathVariable Long quizId, @RequestBody QuestionPostDTO dto) {
         logger.info("Creating question: {}", dto);
-        return ResponseEntity.ok(questionService.addQuizQuestion(quizId, dto));
+        QuestionResponseDTO saved = questionService.addQuizQuestion(quizId, dto);
+        contentWebSocketHandler.broadcast(new ContentEvent("QUIZ", "UPDATED", quizId));
+        return ResponseEntity.ok(saved);
     }
 
     @PutMapping(value = "/questions/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<QuestionResponseDTO> updateQuestion(@PathVariable Long id, @RequestBody QuestionPostDTO dto) {
         logger.info("Updating Response with id {}", id);
-        return ResponseEntity.ok(questionService.updateQuizQuestion(id, dto));
+        QuestionResponseDTO saved = questionService.updateQuizQuestion(id, dto);
+        contentWebSocketHandler.broadcast(new ContentEvent("QUIZ", "UPDATED", null));
+        return ResponseEntity.ok(saved);
     }
 
     @DeleteMapping("/questions/{id}")
@@ -95,6 +109,7 @@ public class QuizController {
     public ResponseEntity<Void> deleteQuestion(@PathVariable Long id) {
         logger.info("Deleting question with id {}", id);
         questionService.deleteQuizQuestion(id);
+        contentWebSocketHandler.broadcast(new ContentEvent("QUIZ", "UPDATED", null));
         return ResponseEntity.noContent().build();
     }
 
@@ -108,14 +123,18 @@ public class QuizController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AnswerResponseDTO> addAnswer(@PathVariable Long questionId, @RequestBody AnswerPostDTO dto) {
         logger.info("Creating answer: {}", dto);
-        return ResponseEntity.ok(answerService.addQuizAnswer(questionId, dto));
+        AnswerResponseDTO saved = answerService.addQuizAnswer(questionId, dto);
+        contentWebSocketHandler.broadcast(new ContentEvent("QUIZ", "UPDATED", null));
+        return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/answers/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AnswerResponseDTO> updateAnswer(@PathVariable Long id, @RequestBody AnswerPostDTO dto) {
         logger.info("Updating Answer with id {}", id);
-        return ResponseEntity.ok(answerService.updateQuizAnswer(id, dto));
+        AnswerResponseDTO saved = answerService.updateQuizAnswer(id, dto);
+        contentWebSocketHandler.broadcast(new ContentEvent("QUIZ", "UPDATED", null));
+        return ResponseEntity.ok(saved);
     }
 
     @GetMapping(value = "/questions/{questionId}/answers", produces = MediaType.APPLICATION_JSON_VALUE)

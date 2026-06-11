@@ -1,8 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {PaginatorModule, PaginatorState} from 'primeng/paginator';
 import {LessonControllerService, LessonDTO} from '../../api';
 import {ActivatedRoute, Router} from '@angular/router';
 import { CommonModule } from '@angular/common';
+import {filter, Subscription} from 'rxjs';
+import {ContentWebSocketService} from '../../services/content-websocket.service';
 @Component({
   selector: 'app-lesson-list',
   imports: [ PaginatorModule, CommonModule],
@@ -10,19 +12,23 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./lesson-list.css'],
   standalone: true,
 })
-export class LessonList implements OnInit {
+export class LessonList implements OnInit, OnDestroy {
   currentLessonIndex = 0;
   lessons: LessonDTO[] = [];
   lesson!: LessonDTO;
   private pendingIndex = 0;
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private lessonService: LessonControllerService,
     private router: Router,
     private route: ActivatedRoute,
+    private contentWebSocket: ContentWebSocketService,
   ) {}
 
   ngOnInit(): void {
+    this.contentWebSocket.connect();
+
     this.route.paramMap.subscribe(pm => {
       const pageParam = Number(pm.get('page') ?? '1');
       const idx = Number.isFinite(pageParam) ? Math.max(0, pageParam - 1) : 0;
@@ -32,6 +38,22 @@ export class LessonList implements OnInit {
       }
     });
 
+    this.loadLessons();
+
+    this.subscriptions.add(
+      this.contentWebSocket.events$.pipe(
+        filter(event => event.resource === 'LESSON')
+      ).subscribe(() => {
+        this.loadLessons();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+
+  private loadLessons(): void {
     this.lessonService.getAllLessons().subscribe(res => {
       const data = (res ?? []) as LessonDTO[];
 

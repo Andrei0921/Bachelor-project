@@ -4,6 +4,9 @@ interface JwtPayload {
   sub?: string;
   email?: string;
   exp?: number;
+  role?: string;
+  roles?: string[];
+  authorities?: string[];
 }
 
 @Injectable({
@@ -154,6 +157,13 @@ export class TokenService {
         sub: typeof payload['sub'] === 'string' ? payload['sub'] : undefined,
         email: typeof payload['email'] === 'string' ? payload['email'] : undefined,
         exp: typeof payload['exp'] === 'number' ? payload['exp'] : undefined,
+        role: typeof payload['role'] === 'string' ? payload['role'] : undefined,
+        roles: Array.isArray(payload['roles'])
+          ? payload['roles'].filter((role): role is string => typeof role === 'string')
+          : undefined,
+        authorities: Array.isArray(payload['authorities'])
+          ? payload['authorities'].filter((role): role is string => typeof role === 'string')
+          : undefined,
       };
     } catch (error) {
       return null;
@@ -176,5 +186,15 @@ export class TokenService {
     } catch {
       return '';
     }
+  }
+
+  isAdmin(): boolean {
+    const token = this.getToken();
+    if (!token) return false;
+
+    const payload = this.parseTokenPayload(token);
+    const roles = payload?.roles ?? payload?.authorities ?? (payload?.role ? [payload.role] : []);
+
+    return roles.includes('ROLE_ADMIN') || roles.includes('ADMIN');
   }
 }

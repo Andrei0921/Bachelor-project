@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {SidebarComponent} from '../sidebar/sidebar';
 import {RouterOutlet} from '@angular/router';
+import {ContentWebSocketService} from '../../services/content-websocket.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -13,4 +14,8 @@ import {RouterOutlet} from '@angular/router';
 })
 export class MainLayoutComponent {
   sidebarCollapsed = false;
+
+  constructor(private readonly contentWebSocket: ContentWebSocketService) {
+    this.contentWebSocket.connect();
+  }
 }

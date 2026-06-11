@@ -37,8 +37,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Authentication failed",
+          "400": {
+            "description": "Invalid argument",
             "content": {
               "application/json": {
                 "schema": {
@@ -51,8 +51,8 @@
             "description": "User not found",
             "content": {}
           },
-          "400": {
-            "description": "Invalid argument",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -61,8 +61,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "401": {
+            "description": "Invalid credentials",
             "content": {
               "application/json": {
                 "schema": {
@@ -113,8 +113,16 @@
           "required": true
         },
         "responses": {
-          "401": {
-            "description": "Authentication failed",
+          "400": {
+            "description": "Invalid user data or ID mismatch",
+            "content": {}
+          },
+          "404": {
+            "description": "User not found",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -123,16 +131,8 @@
               }
             }
           },
-          "404": {
-            "description": "User not found",
-            "content": {}
-          },
-          "400": {
-            "description": "Invalid user data or ID mismatch",
-            "content": {}
-          },
-          "500": {
-            "description": "Internal server error",
+          "401": {
+            "description": "Invalid credentials",
             "content": {
               "application/json": {
                 "schema": {
@@ -173,8 +173,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Authentication failed",
+          "400": {
+            "description": "Invalid argument",
             "content": {
               "application/json": {
                 "schema": {
@@ -187,8 +187,8 @@
             "description": "User not found",
             "content": {}
           },
-          "400": {
-            "description": "Invalid argument",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -197,8 +197,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "401": {
+            "description": "Invalid credentials",
             "content": {
               "application/json": {
                 "schema": {
@@ -524,8 +524,8 @@
         "description": "Returns a list of all users",
         "operationId": "getAllUsers",
         "responses": {
-          "401": {
-            "description": "Authentication failed",
+          "400": {
+            "description": "Invalid argument",
             "content": {
               "application/json": {
                 "schema": {
@@ -544,8 +544,8 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid argument",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -554,8 +554,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "401": {
+            "description": "Invalid credentials",
             "content": {
               "application/json": {
                 "schema": {
@@ -594,15 +594,9 @@
           "required": true
         },
         "responses": {
-          "401": {
-            "description": "Authentication failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+          "400": {
+            "description": "Invalid user data",
+            "content": {}
           },
           "404": {
             "description": "Resource not found",
@@ -614,12 +608,18 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid user data",
-            "content": {}
-          },
           "500": {
             "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
             "content": {
               "application/json": {
                 "schema": {
@@ -1078,15 +1078,9 @@
           "required": true
         },
         "responses": {
-          "401": {
-            "description": "Authentication failed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
+          "400": {
+            "description": "Invalid registration data",
+            "content": {}
           },
           "404": {
             "description": "Resource not found",
@@ -1098,12 +1092,18 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid registration data",
-            "content": {}
-          },
           "500": {
             "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
             "content": {
               "application/json": {
                 "schema": {
@@ -1144,12 +1144,8 @@
           "required": true
         },
         "responses": {
-          "401": {
-            "description": "Invalid credentials",
-            "content": {}
-          },
-          "404": {
-            "description": "Resource not found",
+          "400": {
+            "description": "Invalid argument",
             "content": {
               "application/json": {
                 "schema": {
@@ -1158,8 +1154,8 @@
               }
             }
           },
-          "400": {
-            "description": "Invalid argument",
+          "404": {
+            "description": "Resource not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -1177,6 +1173,10 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {}
           },
           "200": {
             "description": "Login successful",
@@ -1211,8 +1211,8 @@
           }
         ],
         "responses": {
-          "401": {
-            "description": "Authentication failed",
+          "400": {
+            "description": "Invalid argument",
             "content": {
               "application/json": {
                 "schema": {
@@ -1225,8 +1225,8 @@
             "description": "User not found",
             "content": {}
           },
-          "400": {
-            "description": "Invalid argument",
+          "500": {
+            "description": "Internal server error",
             "content": {
               "application/json": {
                 "schema": {
@@ -1235,8 +1235,8 @@
               }
             }
           },
-          "500": {
-            "description": "Internal server error",
+          "401": {
+            "description": "Invalid credentials",
             "content": {
               "application/json": {
                 "schema": {

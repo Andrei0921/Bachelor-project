@@ -17,6 +17,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Backend.main" />
+    <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-websocket:3.5.5" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-web:3.5.5" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-data-jpa:3.5.5" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-security:3.5.5" level="project" />
@@ -37,6 +38,8 @@
     <orderEntry type="library" name="Gradle: org.mapstruct:mapstruct:1.6.2" level="project" />
     <orderEntry type="library" name="Gradle: com.h2database:h2:2.3.232" level="project" />
     <orderEntry type="library" name="Gradle: org.junit.jupiter:junit-jupiter:5.10.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-websocket:6.2.10" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-messaging:6.2.10" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-json:3.5.5" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework.boot:spring-boot-starter-tomcat:3.5.5" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework:spring-webmvc:6.2.10" level="project" />
@@ -77,12 +80,12 @@
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: org.junit.jupiter:junit-jupiter-params:5.12.2" level="project" />
     <orderEntry type="library" name="Gradle: org.junit.jupiter:junit-jupiter-api:5.12.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-context:6.2.10" level="project" />
+    <orderEntry type="library" name="Gradle: org.springframework:spring-beans:6.2.10" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-parameter-names:2.19.2" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.tomcat.embed:tomcat-embed-websocket:10.1.44" level="project" />
     <orderEntry type="library" name="Gradle: org.apache.tomcat.embed:tomcat-embed-core:10.1.44" level="project" />
-    <orderEntry type="library" name="Gradle: org.springframework:spring-context:6.2.10" level="project" />
-    <orderEntry type="library" name="Gradle: org.springframework:spring-beans:6.2.10" level="project" />
     <orderEntry type="library" name="Gradle: org.springframework:spring-expression:6.2.10" level="project" />
     <orderEntry type="library" name="Gradle: io.micrometer:micrometer-observation:1.15.3" level="project" />
     <orderEntry type="library" name="Gradle: com.zaxxer:HikariCP:6.3.2" level="project" />

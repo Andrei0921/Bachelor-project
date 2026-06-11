@@ -1,4 +1,14 @@
 <section class="profile-page">
+  <p-confirmDialog
+    styleClass="delete-confirm-dialog"
+    [modal]="true"
+    [closable]="true"
+    [dismissableMask]="true"
+    [closeOnEscape]="true"
+    [breakpoints]="{ '640px': 'calc(100vw - 32px)' }"
+    [style]="{ width: '440px' }"
+  ></p-confirmDialog>
+
   <div class="page-head">
     <div>
       <p class="eyebrow">CONTUL MEU</p>

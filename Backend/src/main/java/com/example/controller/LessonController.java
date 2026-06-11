@@ -3,6 +3,8 @@ package com.example.controller;
 import com.example.controller.problem.LessonApiErrorResponses;
 import com.example.dto.LessonDTO;
 import com.example.service.LessonService;
+import com.example.websocket.ContentEvent;
+import com.example.websocket.ContentWebSocketHandler;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class LessonController {
     private static final Logger logger = LoggerFactory.getLogger(LessonController.class);
     private final LessonService lessonService;
+    private final ContentWebSocketHandler contentWebSocketHandler;
 
-    public LessonController(LessonService lessonService) {
+    public LessonController(LessonService lessonService, ContentWebSocketHandler contentWebSocketHandler) {
         this.lessonService = lessonService;
+        this.contentWebSocketHandler = contentWebSocketHandler;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -29,6 +33,7 @@ public class LessonController {
             @RequestPart("lesson") LessonDTO dto, @RequestPart(value = "image", required = false) MultipartFile image) {
         logger.info("Creating lesson (multipart): {}", dto);
         LessonDTO saved = lessonService.addLesson(dto, image);
+        contentWebSocketHandler.broadcast(new ContentEvent("LESSON", "CREATED", saved.getId()));
         return ResponseEntity.ok(saved);
     }
 
@@ -41,6 +46,7 @@ public class LessonController {
         logger.info("Updating lesson (multipart) id={}", id);
         dto.setId(id);
         LessonDTO saved = lessonService.updateLesson(dto, image);
+        contentWebSocketHandler.broadcast(new ContentEvent("LESSON", "UPDATED", saved.getId()));
         return ResponseEntity.ok(saved);
     }
 
@@ -63,6 +69,7 @@ public class LessonController {
     public ResponseEntity<Void> deleteLesson(@PathVariable Long id) {
         logger.warn("Deleting lesson with id {}", id);
         lessonService.deleteLesson(id);
+        contentWebSocketHandler.broadcast(new ContentEvent("LESSON", "DELETED", id));
         return ResponseEntity.noContent().build();
     }
 }

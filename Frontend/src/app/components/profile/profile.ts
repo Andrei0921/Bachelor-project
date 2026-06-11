@@ -9,7 +9,8 @@ import {UserControllerService, UserDTO} from '../../api';
 import {ToastService} from '../../services/toast.service';
 import {TokenService} from '../../services/token.service';
 import {ProfileStateService} from '../../services/profile-state.service';
-import {PrimeTemplate} from 'primeng/api';
+import {ConfirmationService, PrimeTemplate} from 'primeng/api';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-profile',
@@ -21,7 +22,9 @@ import {PrimeTemplate} from 'primeng/api';
     Button,
     InputTextModule,
     PrimeTemplate,
+    ConfirmDialogModule,
   ],
+  providers: [ConfirmationService],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
@@ -42,6 +45,7 @@ export class ProfileComponent implements OnInit {
     private readonly tokenService: TokenService,
     private readonly router: Router,
     private readonly profileState: ProfileStateService,
+    private readonly confirmationService: ConfirmationService,
   ) {
     this.profileForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
@@ -143,8 +147,19 @@ export class ProfileComponent implements OnInit {
   }
 
   deleteAccount(): void {
-    if (!confirm('Sigur vrei sa stergi contul? Actiunea nu poate fi anulata.')) return;
+    this.confirmationService.confirm({
+      header: 'Sterge contul',
+      message: 'Esti sigur ca vrei sa stergi contul? Aceasta actiune nu poate fi anulata.',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sterge',
+      rejectLabel: 'Anuleaza',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => this.confirmDeleteAccount(),
+    });
+  }
 
+  private confirmDeleteAccount(): void {
     this.isDeleting = true;
 
     if (!this.user?.id) {

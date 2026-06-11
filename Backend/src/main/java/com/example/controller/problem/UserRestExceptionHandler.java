@@ -120,7 +120,7 @@ public class UserRestExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, String>> handleBadCredentials() {
         Map<String, String> error = new HashMap<>();
-        error.put("error", "Invalid credentials");
+        error.put("error", "Credențiale invalide");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 

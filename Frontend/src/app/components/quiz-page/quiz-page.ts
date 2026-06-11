@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   QuestionResponseDTO,
   QuizControllerService,
@@ -8,11 +8,12 @@ import {
 } from '../../api';
 import { CommonModule } from '@angular/common';
 import {TokenService} from '../../services/token.service';
-import {catchError, map, switchMap} from 'rxjs/operators';
-import {forkJoin, of} from 'rxjs';
+import {catchError, debounceTime, filter, map, switchMap} from 'rxjs/operators';
+import {forkJoin, of, Subscription} from 'rxjs';
 import {FormsModule} from '@angular/forms';
 import {ButtonModule} from 'primeng/button';
 import {SelectModule} from 'primeng/select';
+import {ContentWebSocketService} from '../../services/content-websocket.service';
 
 @Component({
   selector: 'app-quiz-page',
@@ -26,7 +27,7 @@ import {SelectModule} from 'primeng/select';
   styleUrl: './quiz-page.css',
   standalone: true
 })
-export class QuizPage implements OnInit {
+export class QuizPage implements OnInit, OnDestroy {
   quizzes: QuizResponseDTO[] = [];
   activeQuiz: QuizResponseDTO | null = null;
   questions: QuestionResponseDTO[] = [];
@@ -42,6 +43,7 @@ export class QuizPage implements OnInit {
   userId: number | null = null;
 
   private startedAtMs = 0;
+  private readonly subscriptions = new Subscription();
   result: QuizResultDTO | null = null;
   selectedCategory: string = 'Toate';
 
@@ -53,12 +55,29 @@ export class QuizPage implements OnInit {
     private quizApi: QuizControllerService,
     private userApi: UserControllerService,
     private tokenService: TokenService,
+    private contentWebSocket: ContentWebSocketService,
   ) {}
 
   ngOnInit(): void {
+    this.contentWebSocket.connect();
+
     this.loadCurrentUser();
     this.loadCategories();
     this.loadQuizzes();
+
+    this.subscriptions.add(
+      this.contentWebSocket.events$.pipe(
+        filter(event => event.resource === 'QUIZ'),
+        debounceTime(250)
+      ).subscribe(() => {
+        this.loadCategories();
+        this.onCategoryChange();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   get currentQuestion(): QuestionResponseDTO | null {

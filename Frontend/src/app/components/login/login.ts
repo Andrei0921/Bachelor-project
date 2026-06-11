@@ -87,8 +87,7 @@ export class LoginComponent {
       if (token) {
         this.tokenService.setToken(token);
         this.tokenService.setUserId(userId);
-        const isAdmin = this.isAdminFromToken(token);
-        await this.router.navigate([isAdmin ? '/admin/quiz' : '/home']);
+        await this.router.navigate([this.tokenService.isAdmin() ? '/admin/quiz' : '/home']);
       } else {
         this.errorMessage = 'No authentication token received';
         this.toastService.error(this.errorMessage);
@@ -111,44 +110,6 @@ export class LoginComponent {
     };
   }
 
-  private parseJwt(token: string): Record<string, unknown> | null {
-    try {
-      const base64Url = token.split('.')[1];
-      if (!base64Url) {
-        return null;
-      }
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const json = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
-      );
-      const payload = JSON.parse(json) as unknown;
-      return typeof payload === 'object' && payload !== null
-        ? payload as Record<string, unknown>
-        : null;
-    } catch {
-      return null;
-    }
-  }
-
-  private isAdminFromToken(token: string): boolean {
-    const payload = this.parseJwt(token);
-    if (!payload) {
-      return false;
-    }
-
-    const rolesValue = payload['roles'] ?? payload['authorities'];
-    const roles = Array.isArray(rolesValue)
-      ? rolesValue.filter((role): role is string => typeof role === 'string')
-      : typeof payload['role'] === 'string'
-        ? [payload['role']]
-        : [];
-
-    return roles.includes('ROLE_ADMIN') || roles.includes('ADMIN');
-  }
-
   /**
    * Handles login errors
    * @param error - Authentication error
@@ -157,9 +118,9 @@ export class LoginComponent {
     this.isLoading = false;
 
     try {
-      this.errorMessage = await this.httpResponseService.handleError(error, 'Login failed. Please try again.');
+      this.errorMessage = await this.httpResponseService.handleError(error, 'Autentificare eșuată. Te rog încearcă din nou.');
     } catch {
-      this.errorMessage = 'Login failed. Please try again.';
+      this.errorMessage = 'Autentificare eșuată. Te rog încearcă din nou.';
 
     }
 

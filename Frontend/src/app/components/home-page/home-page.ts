@@ -1,9 +1,10 @@
 import {CommonModule} from '@angular/common';
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {BrushingSessionDTO, DashboardControllerService, DashboardDTO} from '../../api';
 import {TokenService} from '../../services/token.service';
-import {catchError, of} from 'rxjs';
+import {catchError, debounceTime, filter, of, Subscription} from 'rxjs';
+import {ContentWebSocketService} from '../../services/content-websocket.service';
 
 @Component({
   selector: 'app-home-page',
@@ -14,19 +15,22 @@ import {catchError, of} from 'rxjs';
   templateUrl: './home-page.html',
   styleUrl: './home-page.css',
 })
-export class HomePageComponent implements OnInit {
+export class HomePageComponent implements OnInit, OnDestroy {
   displayName = '';
   latestBrushing: BrushingSessionDTO | null = null;
   quizzesWithoutMaxScore = 0;
   lessonCount = 0;
   isLoading = true;
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly tokenService: TokenService,
     private readonly dashboardApi: DashboardControllerService,
+    private readonly contentWebSocket: ContentWebSocketService,
   ) {}
 
   ngOnInit(): void {
+    this.contentWebSocket.connect();
     this.displayName = this.tokenService.getDisplayNameFromToken() || 'utilizator';
     const userId = this.tokenService.getUserId();
 
@@ -36,6 +40,17 @@ export class HomePageComponent implements OnInit {
     }
 
     this.loadDashboard(userId);
+
+    this.subscriptions.add(
+      this.contentWebSocket.events$.pipe(
+        filter(event => event.resource === 'LESSON' || event.resource === 'QUIZ'),
+        debounceTime(300)
+      ).subscribe(() => this.loadDashboard(userId))
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   resultLabel(result?: string | null): string {

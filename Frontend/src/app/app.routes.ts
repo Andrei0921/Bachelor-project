@@ -11,9 +11,10 @@ import {adminGuard} from './guards/admin.guard';
 import {AdminQuiz} from './components/admin-quiz/admin-quiz';
 import {AdminLesson} from './components/admin-lesson/admin-lesson';
 import {ProfileComponent} from './components/profile/profile';
+import {landingGuard} from './guards/landing.guard';
 
 export const routes: Routes = [
-  {path: '', redirectTo: '/home', pathMatch: 'full'},
+  {path: '', pathMatch: 'full', canActivate: [landingGuard], children: []},
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   {
