@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import { PaginatorModule } from 'primeng/paginator';
+import {PaginatorModule, PaginatorState} from 'primeng/paginator';
 import {LessonControllerService, LessonDTO} from '../../api';
 import {ActivatedRoute, Router} from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -48,8 +48,8 @@ export class LessonList implements OnInit {
     }
   }
 
-  onPageChange(event: any) {
-    const idx = event.page as number;
+  onPageChange(event: PaginatorState) {
+    const idx = event.page ?? 0;
     this.loadLesson(idx);
     this.router.navigate(['/lesson', idx + 1]);
   }

@@ -11,6 +11,7 @@ import {
   Raycaster,
   Vector2,
   Mesh,
+  Texture,
   TextureLoader, MeshStandardMaterial,
 } from 'three';
 import * as THREE from 'three';
@@ -35,6 +36,14 @@ import {
 } from '../../api';
 import {TokenService} from '../../services/token.service';
 
+interface ToothInfo {
+  name: string;
+  functie: string;
+  pozitie?: string;
+  nr_radacini?: number | string;
+  eruptie?: string;
+}
+
 @Component({
   selector: 'app-model3d',
   templateUrl: './model3d.html',
@@ -55,11 +64,11 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
   renderer!: WebGLRenderer;
   controls!: OrbitControls;
   selectedTooth: string | null = null;
-  selectedToothInfo: any = null;
+  selectedToothInfo: ToothInfo | null = null;
   raycaster = new Raycaster();
   mouse = new Vector2();
   cariesValue: number = 0;
-  textures: any[] = [];
+  textures: Texture[] = [];
   model!: THREE.Object3D;
   brushingActive = false;
   lastMoveTime = 0;
@@ -98,7 +107,7 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
         this.renderer.domElement.removeEventListener('mousemove', this.onBrushMove);
       }
     } catch {
-      // noop
+
     }
   }
 
@@ -117,13 +126,18 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!this.model || this.textures.length === 0) return;
 
-    this.model.traverse((obj: any) => {
+    this.model.traverse((obj) => {
       if (
-        obj.isMesh &&
+        obj instanceof Mesh &&
         (obj.name.toLowerCase().includes("6") || obj.name.toLowerCase().includes("7"))
       ) {
+        if (!(obj.material instanceof MeshStandardMaterial)) return;
+
         if (index === 0) {
-          obj.material.map = obj.userData.originalMaterial.map;
+          const originalMaterial = obj.userData['originalMaterial'];
+          obj.material.map = originalMaterial instanceof MeshStandardMaterial
+            ? originalMaterial.map
+            : null;
         } else {
           obj.material.map = this.textures[index - 1];
         }
@@ -172,10 +186,10 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
 
     gltfLoader.load('Untitled4.glb', (gltf) => {
       this.model = gltf.scene;
-      this.model.traverse((obj: any) => {
-        if (obj.isMesh) {
+      this.model.traverse((obj) => {
+        if (obj instanceof Mesh && obj.material instanceof MeshStandardMaterial) {
           obj.material = obj.material.clone();
-          obj.userData.originalMaterial = obj.material.clone();
+          obj.userData['originalMaterial'] = obj.material.clone();
         }
       });
       const model = gltf.scene;
@@ -190,7 +204,6 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.scene.add(model);
 
-      // ===== CAMERA + ZOOM AUTOMAT =====
       const maxDim = Math.max(size.x, size.y, size.z);
       const fov = this.camera.fov * (Math.PI / 180);
       let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
@@ -240,19 +253,18 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
   private collectTeethMeshes() {
     this.teethMeshes = [];
 
-    this.model.traverse((obj: any) => {
-      if (!obj?.isMesh) return;
+    this.model.traverse((obj) => {
+      if (!(obj instanceof Mesh)) return;
       if (
-        obj.isMesh &&
         (obj.name.toLowerCase().includes("6") || obj.name.toLowerCase().includes("7"))
       ) {
-        this.teethMeshes.push(obj as Mesh);
+        this.teethMeshes.push(obj);
       }
     });
 
     if (this.teethMeshes.length === 0) {
-      this.model.traverse((obj: any) => {
-        if (obj?.isMesh) this.teethMeshes.push(obj as Mesh);
+      this.model.traverse((obj) => {
+        if (obj instanceof Mesh) this.teethMeshes.push(obj);
       });
     }
   }
@@ -293,7 +305,7 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
     this.brushingActive = !this.brushingActive;
 
     if (this.brushingActive) {
-      // START
+
       this.lastMoveTime = 0;
       this.activeTooth = null;
       this.sessionDone = false;
@@ -347,7 +359,6 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
     const tooth = hit.object as Mesh;
     const toothName = tooth.name || 'unknown_tooth';
 
-    // update UI active tooth
     if (this.activeTooth && this.activeTooth !== tooth) {
       this.activeTooth.scale.set(1, 1, 1);
     }
@@ -356,11 +367,9 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selectedToothInfo = Model_info[toothName] || null;
     this.selectedIsTooth = true;
 
-    // inițializează stats
     this.ensureToothStats(toothName);
     const stats = this.toothStats.get(toothName)!;
 
-    // time delta
     const now = Date.now();
 
     if (stats.lastTime === null) {
@@ -372,17 +381,16 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
     stats.lastTime = now;
     if (dt <= 0) return;
 
-    // speed normalizat
     const dx = event.movementX;
     const dy = event.movementY;
     const dist = Math.sqrt(dx * dx + dy * dy);
     const speedPxPerSec = dist / dt;
-    const speed = speedPxPerSec / 900; // tunează 600-1600 după mouse
+    const speed = speedPxPerSec / 900;
 
     stats.movements++;
     stats.speedSum += speed;
 
-    // variance Welford
+
     const n = stats.movements;
     const delta = speed - stats.speedMean;
     stats.speedMean += delta / n;
@@ -390,7 +398,6 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
     stats.speedM2 += delta * delta2;
     stats.speedVariance = n > 1 ? stats.speedM2 / (n - 1) : 0;
 
-    // circular ratio (direction change)
     if (dist > 0.5) {
       stats.totalTime += dt;
       const angle = Math.atan2(dy, dx);
@@ -402,7 +409,6 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
 
         stats.angleSamples++;
 
-        // praguri mai permisive
         if (Math.abs(dA) > 0.05 && Math.abs(dA) < 1) {
           stats.circularHits++;
         }
@@ -424,11 +430,9 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
     const sizeX = Math.max(1e-6, max.x - min.x);
     const sizeY = Math.max(1e-6, max.y - min.y);
 
-// normalizează 0..1 în bbox
     const nx = (localPoint.x - min.x) / sizeX;
     const ny = (localPoint.y - min.y) / sizeY;
 
-// clamp
     const u = Math.min(0.999999, Math.max(0, nx));
     const v = Math.min(0.999999, Math.max(0, ny));
 
@@ -485,11 +489,9 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const entries = Array.from(this.toothStats.entries());
 
-    // dacă n-ai periat nimic, nu face nimic
     if (entries.length === 0) return;
 
     for (const [toothName, stats] of entries) {
-      // prag minim: dacă ai atins dintele prea puțin -> poor
       if (stats.movements < 3 || stats.totalTime < 0.7) {
         this.toothResult.set(toothName, 'poor');
         this.toothAdvice.set(toothName, ['Periaza mai mult timp acest dinte.']);
@@ -611,7 +613,7 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
       await firstValueFrom(this.brushingService.saveSession(userId, payload));
       this.loadBrushingHistory();
     } catch {
-      // Istoricul nu trebuie sa blocheze afisarea rezultatului periajului.
+
     } finally {
       this.isSavingSession = false;
     }

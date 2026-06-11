@@ -4,7 +4,7 @@ import {
   QuizControllerService,
   QuizResponseDTO,
   QuizResultDTO, QuizSubmitDTO,
-  UserControllerService
+  UserControllerService, UserDTO
 } from '../../api';
 import { CommonModule } from '@angular/common';
 import {TokenService} from '../../services/token.service';
@@ -114,8 +114,8 @@ export class QuizPage implements OnInit {
     if (!userId) return;
 
     this.userApi.getUser(userId).pipe(
-      catchError(() => of(null))
-    ).subscribe((u: any) => {
+      catchError(() => of(null as UserDTO | null))
+    ).subscribe((u: UserDTO | null) => {
       this.userId = u?.id ?? null;
       if (this.userId) this.loadUserResults();
     });

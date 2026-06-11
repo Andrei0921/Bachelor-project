@@ -71,26 +71,22 @@ export class FormService {
       confirmPassword: ''
     };
 
-    // Validate name
     if (!name?.trim()) {
       errors.name = 'Numele este obligatoriu.';
     } else if (name.trim().length < 2) {
       errors.name = 'Nnumele este prea scurt(cel putin 2 caractere).';
     }
 
-    // Validate email
     if (!email?.trim()) {
       errors.email = 'Email este ebligatoriu.';
     } else if (!this.isValidEmail(email.trim())) {
       errors.email = 'Introduce-ți o adresă validă.';
     }
 
-    // Validate password
     if (!password) {
       errors.password = 'Parola este obligatorie.';
     }
 
-    // Validate password confirmation
     if (!confirmPassword) {
       errors.confirmPassword = 'Confirmați parola.';
     } else if (password !== confirmPassword) {

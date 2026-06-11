@@ -6,7 +6,7 @@ import {InputTextModule} from 'primeng/inputtext';
 import {PasswordModule} from 'primeng/password';
 import {ButtonModule} from 'primeng/button';
 import {MessageModule} from 'primeng/message';
-import {AuthControllerService} from '../../api';
+import {AuthControllerService, RegisterRequest} from '../../api';
 import {FormService} from '../../services/form.service';
 import {HttpResponseService} from '../../services/http-response.service';
 import {ToastService} from '../../services/toast.service';
@@ -34,7 +34,6 @@ interface FieldErrors {
   ]
 })
 export class RegisterComponent {
-  // Form data
   name = '';
   email = '';
   password = '';
@@ -73,13 +72,13 @@ export class RegisterComponent {
     this.isLoading = true;
     this.clearMessages();
 
-    const userData = {
+    const userData: RegisterRequest = {
       name: this.name.trim(),
       email: this.email.trim(),
       password: this.password
     };
 
-    this.authController.register(userData as any).subscribe({
+    this.authController.register(userData).subscribe({
       next: (response) => {
         this.handleRegistrationSuccess(response);
       },
@@ -94,12 +93,12 @@ export class RegisterComponent {
    * Handles successful registration
    * @param response - Authentication response
    */
-  private async handleRegistrationSuccess(response: any): Promise<void> {
+  private async handleRegistrationSuccess(response: unknown): Promise<void> {
     this.isLoading = false;
 
     try {
-      const parsedResponse = await this.httpResponseService.handleResponse(response);
-      this.successMessage = (parsedResponse as any)?.message || 'Registration successful! You can now log in.';
+      const parsedResponse = await this.httpResponseService.handleResponse<unknown>(response);
+      this.successMessage = this.getRegistrationMessage(parsedResponse);
       this.clearForm();
 
       setTimeout(() => {
@@ -115,7 +114,7 @@ export class RegisterComponent {
    * Handles registration errors
    * @param error - Authentication error
    */
-  private async handleRegistrationError(error: any): Promise<void> {
+  private async handleRegistrationError(error: unknown): Promise<void> {
     this.isLoading = false;
 
     try {
@@ -128,6 +127,17 @@ export class RegisterComponent {
 
     this.password = '';
     this.confirmPassword = '';
+  }
+
+  private getRegistrationMessage(response: unknown): string {
+    if (typeof response === 'object' && response !== null && 'message' in response) {
+      const message = (response as { message?: unknown }).message;
+      if (typeof message === 'string' && message.trim()) {
+        return message;
+      }
+    }
+
+    return 'Registration successful! You can now log in.';
   }
 
 

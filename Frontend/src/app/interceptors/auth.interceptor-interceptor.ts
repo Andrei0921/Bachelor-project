@@ -27,11 +27,7 @@ export const AuthInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, ne
   return next(authenticatedReq);
 };
 
-/**
- * Checks if the request URL is an authentication endpoint
- * @param url - Request URL
- * @returns boolean indicating if URL is an auth endpoint
- */
+
 function isAuthEndpoint(url: string): boolean {
   return url.includes('/api/auth/');
 }

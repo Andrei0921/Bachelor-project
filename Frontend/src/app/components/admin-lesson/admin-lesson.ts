@@ -1,13 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {LessonControllerService, LessonDTO} from '../../api';
-import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {TableModule} from 'primeng/table';
 import {Card} from 'primeng/card';
 import {Toolbar} from 'primeng/toolbar';
 import {Button} from 'primeng/button';
 import {InputTextModule} from 'primeng/inputtext';
-import {FileUploadModule} from 'primeng/fileupload';
+import {FileSelectEvent, FileUploadModule} from 'primeng/fileupload';
 import {ToastService} from '../../services/toast.service';
 import { TextareaModule } from 'primeng/textarea';
 import {ConfirmDialogModule} from 'primeng/confirmdialog';
@@ -34,7 +34,7 @@ import {ConfirmationService} from 'primeng/api';
 })
 export class AdminLesson implements OnInit {
 
-  form:any;
+  form:FormGroup;
   lessons: LessonDTO[] = [];
   isLoading = false;
   editingId: number | null = null;
@@ -78,6 +78,8 @@ export class AdminLesson implements OnInit {
 
   startEdit(l: LessonDTO) {
     this.editingId = l.id!;
+    this.selectedImage = null;
+    this.preview = l.imagineUrls?.trim() || null;
     this.form.reset({
       titlu: l.titlu ?? '',
       continut: l.contentText ?? '',
@@ -85,7 +87,7 @@ export class AdminLesson implements OnInit {
     });
   }
 
-  onImageSelected(event: any) {
+  onImageSelected(event: FileSelectEvent) {
     const file: File | undefined = event.files?.[0];
     if (!file) return;
 

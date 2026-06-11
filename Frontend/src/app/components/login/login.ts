@@ -7,11 +7,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { MessageModule } from 'primeng/message';
-import { AuthControllerService } from '../../api';
+import { AuthControllerService, AuthResponse } from '../../api';
 import { TokenService } from '../../services/token.service';
 import { FormService } from '../../services/form.service';
 import { HttpResponseService } from '../../services/http-response.service';
 import {ToastService} from '../../services/toast.service';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -68,20 +69,20 @@ export class LoginComponent {
   }
 
 
-  private async handleLoginSuccess(response: any): Promise<void> {
+  private async handleLoginSuccess(response: AuthResponse | Blob): Promise<void> {
     this.isLoading = false;
     this.errorMessage = '';
 
     try {
-      let parsedResponse;
+      let parsedResponse: AuthResponse;
       if (response instanceof Blob) {
         const text = await response.text();
-        parsedResponse = JSON.parse(text);
+        parsedResponse = this.parseAuthResponse(JSON.parse(text) as unknown);
       } else {
         parsedResponse = response;
       }
-      const token = (parsedResponse as any)?.token;
-      const userId = (parsedResponse as any)?.userId;
+      const token = parsedResponse.token;
+      const userId = parsedResponse.userId;
 
       if (token) {
         this.tokenService.setToken(token);
@@ -98,9 +99,24 @@ export class LoginComponent {
     }
   }
 
-  private parseJwt(token: string): any | null {
+  private parseAuthResponse(value: unknown): AuthResponse {
+    if (typeof value !== 'object' || value === null) {
+      return {};
+    }
+
+    const response = value as Record<string, unknown>;
+    return {
+      token: typeof response['token'] === 'string' ? response['token'] : undefined,
+      userId: typeof response['userId'] === 'number' ? response['userId'] : undefined,
+    };
+  }
+
+  private parseJwt(token: string): Record<string, unknown> | null {
     try {
       const base64Url = token.split('.')[1];
+      if (!base64Url) {
+        return null;
+      }
       const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
       const json = decodeURIComponent(
         atob(base64)
@@ -108,7 +124,10 @@ export class LoginComponent {
           .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
           .join('')
       );
-      return JSON.parse(json);
+      const payload = JSON.parse(json) as unknown;
+      return typeof payload === 'object' && payload !== null
+        ? payload as Record<string, unknown>
+        : null;
     } catch {
       return null;
     }
@@ -116,10 +135,16 @@ export class LoginComponent {
 
   private isAdminFromToken(token: string): boolean {
     const payload = this.parseJwt(token);
-    const roles: string[] =
-      payload?.roles ??
-      payload?.authorities ??
-      (payload?.role ? [payload.role] : []);
+    if (!payload) {
+      return false;
+    }
+
+    const rolesValue = payload['roles'] ?? payload['authorities'];
+    const roles = Array.isArray(rolesValue)
+      ? rolesValue.filter((role): role is string => typeof role === 'string')
+      : typeof payload['role'] === 'string'
+        ? [payload['role']]
+        : [];
 
     return roles.includes('ROLE_ADMIN') || roles.includes('ADMIN');
   }
@@ -128,7 +153,7 @@ export class LoginComponent {
    * Handles login errors
    * @param error - Authentication error
    */
-  private async handleLoginError(error: any): Promise<void> {
+  private async handleLoginError(error: HttpErrorResponse | unknown): Promise<void> {
     this.isLoading = false;
 
     try {

@@ -52,7 +52,7 @@ export class AdminQuiz implements OnInit {
   quizzes: QuizResponseDTO[] = [];
   isLoading = false;
   editingId: number | null = null;
-  form: any;
+  form: FormGroup;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -310,7 +310,7 @@ export class AdminQuiz implements OnInit {
                   : this.quizController.addAnswer(questionId, aDto);
 
                 return saveAnswer$.pipe(
-                  tap((savedAnswer: any) => {
+                  tap((savedAnswer: AnswerResponseDTO) => {
                     if (!aId && savedAnswer?.id) {
                       aCtrl.patchValue({ id: savedAnswer.id });
                     }

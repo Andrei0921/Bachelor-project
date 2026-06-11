@@ -1,5 +1,11 @@
 import {Injectable} from '@angular/core';
 
+interface JwtPayload {
+  sub?: string;
+  email?: string;
+  exp?: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +26,7 @@ export class TokenService {
         localStorage.removeItem(this.TOKEN_KEY);
       }
     } catch (error) {
-      // Silent fail in production - could be enhanced with proper logging service
+      console.warn('Nu s-a putut salva sau șterge tokenul din localStorage.', error);
     }
   }
 
@@ -32,8 +38,8 @@ export class TokenService {
       }
 
       localStorage.setItem(this.USER_ID_KEY, String(userId));
-    } catch {
-      // Silent fail in production
+    } catch(error) {
+      console.warn('Nu s-a putut salva sau șterge ID-ul utilizatorului din localStorage.', error);
     }
   }
 
@@ -61,16 +67,14 @@ export class TokenService {
       return null;
     }
   }
-  /**
-   * Clears all authentication data from localStorage
-   */
+
   clear(): void {
     try {
       localStorage.removeItem(this.TOKEN_KEY);
       localStorage.removeItem(this.CURRENT_USER_KEY);
       localStorage.removeItem(this.USER_ID_KEY);
     } catch (error) {
-      // Silent fail in production
+      console.warn('Nu s-au putut șterge datele din localStorage.', error);
     }
   }
 
@@ -130,18 +134,27 @@ export class TokenService {
    * @param token - JWT token
    * @returns Parsed payload or null if parsing fails
    */
-  private parseTokenPayload(token: string): any {
+  private parseTokenPayload(token: string): JwtPayload | null {
     try {
       const parts = token.split('.');
       if (parts.length < 2) {
         throw new Error('Invalid token format');
       }
 
-      // Decode base64url encoded payload
-      const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-      const decodedPayload = atob(payload);
+      const encodedPayload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+      const decodedPayload = atob(encodedPayload);
 
-      return JSON.parse(decodedPayload);
+      const parsedPayload = JSON.parse(decodedPayload) as unknown;
+      if (typeof parsedPayload !== 'object' || parsedPayload === null) {
+        return null;
+      }
+
+      const payload = parsedPayload as Record<string, unknown>;
+      return {
+        sub: typeof payload['sub'] === 'string' ? payload['sub'] : undefined,
+        email: typeof payload['email'] === 'string' ? payload['email'] : undefined,
+        exp: typeof payload['exp'] === 'number' ? payload['exp'] : undefined,
+      };
     } catch (error) {
       return null;
     }

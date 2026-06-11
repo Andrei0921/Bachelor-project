@@ -1,6 +1,6 @@
 import {CommonModule} from '@angular/common';
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 import {Button} from 'primeng/button';
 import {Card} from 'primeng/card';
@@ -32,8 +32,8 @@ export class ProfileComponent implements OnInit {
   isSavingPassword = false;
   isDeleting = false;
 
-  profileForm: any;
-  passwordForm: any;
+  profileForm: FormGroup;
+  passwordForm: FormGroup;
 
   constructor(
     private readonly userApi: UserControllerService,
