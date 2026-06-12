@@ -327,7 +327,7 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
       this.activeTooth = null;
 
 
-      await this.evaluateAllTeethAndColor();
+      await this.evaluateAllTeeth();
       await this.saveBrushingSession();
     }
   }
@@ -484,7 +484,7 @@ export class ModelComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  private async evaluateAllTeethAndColor(): Promise<void> {
+  private async evaluateAllTeeth(): Promise<void> {
     const recommendedTime = 5;
 
     const entries = Array.from(this.toothStats.entries());
