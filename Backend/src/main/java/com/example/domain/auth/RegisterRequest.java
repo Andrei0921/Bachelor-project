@@ -14,7 +14,7 @@ public class RegisterRequest {
     @NotBlank(message = "Password must not be blank")
     private String password;
 
-    // Getters and setters
+
     public String getName() {
         return name;
     }
