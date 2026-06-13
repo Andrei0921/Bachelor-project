@@ -8,11 +8,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 
 
-# -------------------------------
-# 1. Date sintetice
-# -------------------------------
-# [totalTime, avgSpeed, speedVar, pauses,
-#  circularRatio, coverage, revisitDelay, pressureVar]
 df = pd.read_csv("../Backend/src/main/resources/training_data.csv")
 cols = ["totalTime", "avgSpeed", "speedVariance", "circularRatio", "coverage", "label"]
 df = df[cols].copy()
@@ -23,27 +18,22 @@ feature_cols = ["totalTime", "avgSpeed", "speedVariance", "circularRatio", "cove
 X = df[feature_cols].values
 y = df["label"].astype(int).values
 
-# -------------------------------
-# 2. Split date
-# -------------------------------
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y if len(np.unique(y)) > 1 else None
 )
 
-# 5) Normalizare
+
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-# 6) Modele
 log_reg = LogisticRegression(max_iter=2000)
 rf = RandomForestClassifier(n_estimators=200, random_state=42)
 
 log_reg.fit(X_train_scaled, y_train)
 rf.fit(X_train_scaled, y_train)
 
-# 7) Evaluare
 pred_lr = log_reg.predict(X_test_scaled)
 pred_rf = rf.predict(X_test_scaled)
 
